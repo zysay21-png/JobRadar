@@ -1,20 +1,44 @@
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, SessionLocal
 from app.importers.run_importers import run_all
-from app.models import Company, Job
+from app.models import Company, ImporterState, Job
 from app.schemas import (
     CompanyCreate,
     CompanyRead,
     CompanyWithJobs,
     ImporterRunResult,
+    ImporterStateRead,
     JobCreate,
     JobRead,
 )
 
-app = FastAPI(title="Job Radar API")
+AUTO_REFRESH_INTERVAL_SECONDS = 24 * 60 * 60
+
+
+async def _auto_refresh_loop():
+    loop = asyncio.get_event_loop()
+    while True:
+        await asyncio.sleep(AUTO_REFRESH_INTERVAL_SECONDS)
+        db = SessionLocal()
+        try:
+            await loop.run_in_executor(None, run_all, db)
+        finally:
+            db.close()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.create_task(_auto_refresh_loop())
+    yield
+
+
+app = FastAPI(title="Job Radar API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -95,3 +119,11 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
 @app.post("/importers/run", response_model=ImporterRunResult)
 def run_importers(db: Session = Depends(get_db)):
     return run_all(db)
+
+
+@app.get("/importers/state", response_model=ImporterStateRead)
+def get_importer_state(db: Session = Depends(get_db)):
+    state = db.query(ImporterState).filter(ImporterState.id == 1).first()
+    if not state:
+        return ImporterStateRead(last_refresh_at=None)
+    return state

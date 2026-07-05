@@ -1,7 +1,7 @@
 import type { Job } from "../types";
 import { formatJobDate } from "../utils/jobs";
 
-export default function JobCard({ job }: { job: Job }) {
+export default function JobCard({ job, isNew = false }: { job: Job; isNew?: boolean }) {
   const location = [job.city, job.country].filter(Boolean).join(", ") || "Location not specified";
   const posted = formatJobDate(job.posted_date);
 
@@ -11,9 +11,12 @@ export default function JobCard({ job }: { job: Job }) {
 
       <div className="card-header">
         <h3>{job.title}</h3>
-        <span className={job.is_verified ? "badge badge-verified" : "badge badge-review"}>
-          {job.is_verified ? "Verified" : "Needs review"}
-        </span>
+        <div className="badge-row">
+          {isNew && <span className="badge badge-new">New</span>}
+          <span className={job.is_verified ? "badge badge-verified" : "badge badge-review"}>
+            {job.is_verified ? "Verified" : "Needs review"}
+          </span>
+        </div>
       </div>
 
       <div className="tag-row">

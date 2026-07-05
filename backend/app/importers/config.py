@@ -13,4 +13,13 @@
 # GREENHOUSE_COMPANIES = {
 #     "Some Company": "somecompany",
 # }
-GREENHOUSE_COMPANIES: dict[str, str] = {}
+#
+# Confirmed via a direct call to https://boards-api.greenhouse.io/v1/boards/<token>/jobs
+# on 2026-07-05:
+#   - "hoyoverse" -> real, currently 0 open jobs.
+#   - "kraftonamericas" -> real, jobs returned have company_name "KRAFTON Americas"
+#     (Krafton's US office/subsidiary — same company family as our "Krafton" row).
+GREENHOUSE_COMPANIES: dict[str, str] = {
+    "HoYoverse": "hoyoverse",
+    "Krafton": "kraftonamericas",
+}

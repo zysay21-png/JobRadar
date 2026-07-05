@@ -1,4 +1,4 @@
-import type { Company, CompanyWithJobs, ImporterRunResult, Job } from "../types";
+import type { Company, CompanyWithJobs, ImporterRunResult, ImporterState, Job } from "../types";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -32,4 +32,8 @@ export function getCompany(id: number): Promise<CompanyWithJobs> {
 
 export function runImporters(): Promise<ImporterRunResult> {
   return postJson<ImporterRunResult>("/importers/run");
+}
+
+export function getImporterState(): Promise<ImporterState> {
+  return getJson<ImporterState>("/importers/state");
 }

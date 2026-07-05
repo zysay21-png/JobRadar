@@ -65,6 +65,8 @@ class Job(Base):
 
     posted_date = Column(Date)
 
+    first_seen = Column(DateTime)
+
     last_checked = Column(DateTime)
 
     notes = Column(Text)
@@ -74,3 +76,17 @@ class Job(Base):
     is_verified = Column(Boolean, default=False, nullable=False)
 
     company = relationship("Company", back_populates="jobs")
+
+
+class ImporterState(Base):
+    """Single-row table tracking when the importer system last completed a run.
+
+    Used to compute "new since last check": a job is new if its first_seen
+    matches this timestamp (i.e. it was added during the most recent run).
+    """
+
+    __tablename__ = "importer_state"
+
+    id = Column(Integer, primary_key=True)
+
+    last_refresh_at = Column(DateTime)

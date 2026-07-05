@@ -517,6 +517,7 @@ for job in jobs:
                 official_url=job["official_url"],
                 status="open",
                 posted_date=None,
+                first_seen=None,
                 last_checked=None,
                 notes=None,
                 source_type="official",

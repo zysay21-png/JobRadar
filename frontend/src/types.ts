@@ -28,6 +28,7 @@ export interface Job {
   official_url: string | null;
   status: string;
   posted_date: string | null;
+  first_seen: string | null;
   last_checked: string | null;
   notes: string | null;
   source_type: "official" | "manual" | "demo";
@@ -41,8 +42,15 @@ export interface CompanyWithJobs extends Company {
 
 export interface ImporterRunResult {
   companies_checked: number;
+  companies_skipped: number;
   jobs_found: number;
   jobs_added: number;
   jobs_updated: number;
+  jobs_closed: number;
   errors: string[];
+  refreshed_at: string | null;
+}
+
+export interface ImporterState {
+  last_refresh_at: string | null;
 }

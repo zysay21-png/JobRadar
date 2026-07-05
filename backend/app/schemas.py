@@ -43,6 +43,7 @@ class JobBase(BaseModel):
     official_url: str | None = None
     status: str = "open"
     posted_date: date | None = None
+    first_seen: datetime | None = None
     last_checked: datetime | None = None
     notes: str | None = None
     source_type: Literal["official", "manual", "demo"] = "manual"
@@ -67,7 +68,14 @@ class CompanyWithJobs(CompanyRead):
 
 class ImporterRunResult(BaseModel):
     companies_checked: int
+    companies_skipped: int
     jobs_found: int
     jobs_added: int
     jobs_updated: int
+    jobs_closed: int
     errors: list[str]
+    refreshed_at: datetime | None = None
+
+
+class ImporterStateRead(BaseModel):
+    last_refresh_at: datetime | None = None
