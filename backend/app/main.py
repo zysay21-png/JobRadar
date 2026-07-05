@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, SessionLocal
-from app.importers.run_importers import run_all
+from app.importers.runner import run_all
 from app.models import Company, ImporterState, Job
 from app.schemas import (
     CompanyCreate,
