@@ -1,11 +1,19 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, SessionLocal
-from app.models import Company
-from app.schemas import CompanyCreate, CompanyRead
+from app.models import Company, Job
+from app.schemas import CompanyCreate, CompanyRead, JobCreate, JobRead
 
 app = FastAPI(title="Job Radar API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 
@@ -40,3 +48,29 @@ def create_company(company: CompanyCreate, db: Session = Depends(get_db)):
 @app.get("/companies", response_model=list[CompanyRead])
 def get_companies(db: Session = Depends(get_db)):
     return db.query(Company).all()
+
+
+@app.post("/jobs", response_model=JobRead)
+def create_job(job: JobCreate, db: Session = Depends(get_db)):
+    company = db.query(Company).filter(Company.id == job.company_id).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    new_job = Job(**job.model_dump())
+    db.add(new_job)
+    db.commit()
+    db.refresh(new_job)
+    return new_job
+
+
+@app.get("/jobs", response_model=list[JobRead])
+def get_jobs(db: Session = Depends(get_db)):
+    return db.query(Job).all()
+
+
+@app.get("/jobs/{job_id}", response_model=JobRead)
+def get_job(job_id: int, db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return job

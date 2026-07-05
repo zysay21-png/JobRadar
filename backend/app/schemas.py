@@ -1,3 +1,6 @@
+from datetime import date, datetime
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -21,6 +24,36 @@ class CompanyCreate(CompanyBase):
 
 class CompanyRead(CompanyBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+
+class JobBase(BaseModel):
+    company_id: int
+    title: str
+    department: str | None = None
+    country: str | None = None
+    city: str | None = None
+    work_model: str | None = None
+    experience_level: str | None = None
+    platform: str | None = None
+    official_url: str | None = None
+    status: str = "open"
+    posted_date: date | None = None
+    last_checked: datetime | None = None
+    notes: str | None = None
+    source_type: Literal["official", "manual", "demo"] = "manual"
+    is_verified: bool = False
+
+
+class JobCreate(JobBase):
+    pass
+
+
+class JobRead(JobBase):
+    id: int
+    company: CompanyRead | None = None
 
     class Config:
         from_attributes = True
