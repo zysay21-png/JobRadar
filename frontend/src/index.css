@@ -143,6 +143,12 @@ a {
   margin: 0;
 }
 
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: -0.7rem 0 1rem;
+}
+
 .section-link {
   color: var(--accent);
   font-weight: 500;
@@ -151,6 +157,23 @@ a {
 
 .section-link:hover {
   text-decoration: underline;
+}
+
+.section-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.refresh-jobs .btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.refresh-jobs .state-error {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
 }
 
 /* Cards */
@@ -223,18 +246,7 @@ a {
   font-size: 0.85rem;
 }
 
-.card-link {
-  color: var(--accent);
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-top: 0.2rem;
-}
-
-.card-link:hover {
-  text-decoration: underline;
-}
-
-.status-badge {
+.badge {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -243,14 +255,60 @@ a {
   white-space: nowrap;
 }
 
-.status-open {
+.badge-verified {
   background: rgba(76, 208, 124, 0.15);
   color: var(--success);
 }
 
-.status-closed {
+.badge-review {
   background: rgba(255, 107, 107, 0.15);
   color: var(--danger);
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0f1115;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-lg {
+  align-self: flex-start;
+  flex: none;
+  padding: 0.6rem 1.2rem;
+  margin-top: 0.5rem;
 }
 
 /* Company detail */
@@ -263,6 +321,15 @@ a {
 
 .company-detail-header h1 {
   margin: 0;
+}
+
+.company-detail-actions {
+  margin-top: 0.3rem;
+}
+
+.company-detail-actions .btn {
+  flex: none;
+  padding: 0.6rem 1.2rem;
 }
 
 /* State messages */

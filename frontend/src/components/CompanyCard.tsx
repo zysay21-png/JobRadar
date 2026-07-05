@@ -19,6 +19,7 @@ export default function CompanyCard({ company }: { company: Company }) {
       </div>
 
       <div className="tag-row">
+        {company.industry && <span className="tag">{company.industry}</span>}
         {company.platform && <span className="tag">{company.platform}</span>}
         {company.engine && <span className="tag">{company.engine}</span>}
         {workModes(company).map((mode) => (

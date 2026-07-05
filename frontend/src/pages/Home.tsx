@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { getJobs } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
 import JobCard from "../components/JobCard";
+import RefreshJobsButton from "../components/RefreshJobsButton";
 import { activeJobs, NO_VERIFIED_JOBS_MESSAGE } from "../utils/jobs";
 
 export default function Home() {
-  const { data: jobs, loading, error } = useApiData(getJobs);
+  const { data: jobs, loading, error, refetch } = useApiData(getJobs);
   const recentJobs = activeJobs(jobs ?? []).slice(0, 6);
 
   return (
@@ -23,11 +24,15 @@ export default function Home() {
 
       <section>
         <div className="section-header">
-          <h2>Recent openings</h2>
-          <Link to="/jobs" className="section-link">
-            View all
-          </Link>
+          <h2>Latest Verified Jobs</h2>
+          <div className="section-header-actions">
+            <Link to="/jobs" className="section-link">
+              View all
+            </Link>
+            <RefreshJobsButton onRefreshed={refetch} />
+          </div>
         </div>
+        <p className="section-subtitle">Newest verified openings.</p>
 
         {loading && <p className="state-message">Loading jobs...</p>}
         {error && <p className="state-message state-error">Failed to load jobs: {error}</p>}

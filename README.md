@@ -29,17 +29,37 @@ JobRadar/
 
 ## Getting Started
 
+### Quick Start (recommended)
+
+From the repo root, run:
+
+```bash
+./start.sh
+```
+
+This starts both the FastAPI backend and the Vite frontend with one command, and prints the URL for each once they're ready (backend at `http://127.0.0.1:8000`, frontend URL is printed by Vite — normally `http://localhost:5173`). On first run it will automatically create the backend virtual environment and install both backend and frontend dependencies if they're missing. Press `Ctrl+C` to stop both servers.
+
+Tested on Ubuntu. Requires `bash`, `python3`, and `npm` to already be installed on the machine.
+
 ### Prerequisites
 
 - Python 3.10+
+- Node.js + npm (for the frontend)
 
-### Setup
+### Manual Setup
+
+If you'd rather run each piece yourself instead of using `start.sh`:
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+```bash
+cd frontend
+npm install
 ```
 
 ### Run the API
@@ -50,6 +70,15 @@ uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://127.0.0.1:8000`. Interactive docs are available at `http://127.0.0.1:8000/docs`.
+
+### Run the Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will be available at the URL Vite prints (normally `http://localhost:5173`).
 
 ### Seed Sample Data
 

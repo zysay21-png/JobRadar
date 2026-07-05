@@ -6,10 +6,12 @@ from pydantic import BaseModel
 
 class CompanyBase(BaseModel):
     name: str
+    industry: str | None = None
     country: str | None = None
     city: str | None = None
     platform: str | None = None
     engine: str | None = None
+    website: str | None = None
     careers_url: str | None = None
     remote: bool = False
     hybrid: bool = False
@@ -57,3 +59,15 @@ class JobRead(JobBase):
 
     class Config:
         from_attributes = True
+
+
+class CompanyWithJobs(CompanyRead):
+    jobs: list[JobRead] = []
+
+
+class ImporterRunResult(BaseModel):
+    companies_checked: int
+    jobs_found: int
+    jobs_added: int
+    jobs_updated: int
+    errors: list[str]

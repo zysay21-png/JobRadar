@@ -3,8 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, SessionLocal
+from app.importers.run_importers import run_all
 from app.models import Company, Job
-from app.schemas import CompanyCreate, CompanyRead, JobCreate, JobRead
+from app.schemas import (
+    CompanyCreate,
+    CompanyRead,
+    CompanyWithJobs,
+    ImporterRunResult,
+    JobCreate,
+    JobRead,
+)
 
 app = FastAPI(title="Job Radar API")
 
@@ -50,6 +58,14 @@ def get_companies(db: Session = Depends(get_db)):
     return db.query(Company).all()
 
 
+@app.get("/companies/{company_id}", response_model=CompanyWithJobs)
+def get_company(company_id: int, db: Session = Depends(get_db)):
+    company = db.query(Company).filter(Company.id == company_id).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    return company
+
+
 @app.post("/jobs", response_model=JobRead)
 def create_job(job: JobCreate, db: Session = Depends(get_db)):
     company = db.query(Company).filter(Company.id == job.company_id).first()
@@ -74,3 +90,8 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@app.post("/importers/run", response_model=ImporterRunResult)
+def run_importers(db: Session = Depends(get_db)):
+    return run_all(db)

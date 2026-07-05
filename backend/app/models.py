@@ -11,6 +11,8 @@ class Company(Base):
 
     name = Column(String, unique=True)
 
+    industry = Column(String)
+
     country = Column(String)
 
     city = Column(String)
@@ -18,6 +20,8 @@ class Company(Base):
     platform = Column(String)
 
     engine = Column(String)
+
+    website = Column(String)
 
     careers_url = Column(String)
 

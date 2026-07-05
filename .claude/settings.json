@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kill -9 392937)",
+      "Bash(pkill -9 -f \"node .*vite\")"
+    ]
+  }
+}
