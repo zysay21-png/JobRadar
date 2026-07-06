@@ -9,6 +9,13 @@
 > trap), required verification steps, and the "never invent missing data"
 > rule. This file below explains the current folder structure; the
 > standard explains the process for changing it.
+>
+> For how imported data is *displayed* once it's in the database (country
+> name formatting, location cleanup, job card/company page structure), see
+> [`docs/UI_DISPLAY_STANDARD.md`](../../../docs/UI_DISPLAY_STANDARD.md) —
+> the frontend's equivalent permanent standard. Importers never format for
+> display; they only preserve official data (Rule 1 there mirrors Rule 10
+> here).
 
 Every importer implements `BaseImporter` (`base.py`): `fetch_jobs()` gets raw
 data from a company's official source, `parse_jobs()` turns it into

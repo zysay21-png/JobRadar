@@ -9,6 +9,12 @@ Job Radar exists to show real, verified job postings sourced from
 official company career pages. Every rule below exists to protect that
 one property. When a rule and convenience conflict, the rule wins.
 
+This document covers *what data gets imported and how*. For how that
+data is *presented* once it's in the database — country name formatting,
+location cleanup, job card structure, company page layout — see
+[`docs/UI_DISPLAY_STANDARD.md`](UI_DISPLAY_STANDARD.md), the frontend's
+equivalent permanent standard.
+
 ---
 
 ## RULE 0 — Research First
