@@ -54,9 +54,20 @@ GREENHOUSE_COMPANIES: dict[str, str] = {
 # on 2026-07-05:
 #   - Moon Active: token/uid embedded in the HTML of
 #     moonactive.com/hot-positions/, real, currently open positions returned.
+#
+# Confirmed the same way on 2026-07-06:
+#   - SuperPlay: token/uid embedded directly in the plain HTML of
+#     superplay.co/careers/ (comeet_company_uid / comeet_token), real,
+#     positions returned have company_name "SuperPlay" across 3 real
+#     offices (Tel Aviv-Yafo, Warsaw, Bucharest) — one company, multiple
+#     offices, not separate companies.
 COMEET_COMPANIES: dict[str, dict[str, str]] = {
     "Moon Active": {
         "company_uid": "A2.00C",
         "token": "2ACD5C02AC10081008AB01560180C804",
+    },
+    "SuperPlay": {
+        "company_uid": "28.003",
+        "token": "82330D228AF208C208C493B30D2208C38F538F5",
     },
 }

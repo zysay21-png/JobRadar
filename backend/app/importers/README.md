@@ -1,5 +1,15 @@
 # Importers
 
+> **Before adding a new company:** read
+> [`docs/COMPANY_ONBOARDING_STANDARD.md`](../../../docs/COMPANY_ONBOARDING_STANDARD.md)
+> first. It's the mandatory research → build → verify → report workflow for
+> every company, importer, and platform added to Job Radar — covering ATS
+> detection, reuse vs. new-platform vs. custom decisions, the
+> one-parent-company rule (and the real Bungie/PlayStation-studio duplicate
+> trap), required verification steps, and the "never invent missing data"
+> rule. This file below explains the current folder structure; the
+> standard explains the process for changing it.
+
 Every importer implements `BaseImporter` (`base.py`): `fetch_jobs()` gets raw
 data from a company's official source, `parse_jobs()` turns it into
 `NormalizedJob` records, and the shared `sync_jobs()` does the add/update/

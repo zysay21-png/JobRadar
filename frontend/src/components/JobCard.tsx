@@ -1,8 +1,18 @@
 import type { Job } from "../types";
 import { formatJobDate } from "../utils/jobs";
+import { jobDepartmentLabel, jobStudioLabel, studioUsesCityField } from "../utils/jobGroups";
+import { formatLocation } from "../utils/location";
 
 export default function JobCard({ job, isNew = false }: { job: Job; isNew?: boolean }) {
-  const location = [job.city, job.country].filter(Boolean).join(", ") || "Location not specified";
+  const companyName = job.company?.name ?? "";
+  const studio = jobStudioLabel(job, companyName);
+  const department = jobDepartmentLabel(job, companyName);
+
+  // When this company's studio badge already comes from the city field
+  // (e.g. Rockstar's "Rockstar North"), don't repeat it in the plain
+  // location line too — the studio badge already conveys the location.
+  const locationCity = studioUsesCityField(companyName) ? null : job.city;
+  const location = formatLocation(locationCity, job.country);
   const posted = formatJobDate(job.posted_date);
 
   return (
@@ -19,13 +29,20 @@ export default function JobCard({ job, isNew = false }: { job: Job; isNew?: bool
         </div>
       </div>
 
+      {(studio || department) && (
+        <div className="tag-row">
+          {studio && <span className="tag tag-studio">{studio}</span>}
+          {department && <span className="tag tag-department">{department}</span>}
+        </div>
+      )}
+
       <div className="tag-row">
         {job.work_model && <span className="tag">{job.work_model}</span>}
         {job.platform && <span className="tag">{job.platform}</span>}
       </div>
 
       <div className="card-meta">
-        <span>{location}</span>
+        {location && <span>{location}</span>}
         {posted && <span>Posted {posted}</span>}
       </div>
 

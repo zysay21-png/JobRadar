@@ -6,19 +6,72 @@ import JobCard from "../components/JobCard";
 import ShowAllJobsToggle from "../components/ShowAllJobsToggle";
 import { activeJobs } from "../utils/jobs";
 import { englishFocusedJobs } from "../utils/englishFocus";
-import { ALL_GROUPS_LABEL, filterByGroup, groupJobs } from "../utils/jobGroups";
+import { formatLocation } from "../utils/location";
+import {
+  ALL_DEPARTMENTS_LABEL,
+  ALL_LOCATIONS_LABEL,
+  ALL_STUDIOS_LABEL,
+  computeFacetGroups,
+  EMPTY_SELECTION,
+  filterByFacets,
+  type FacetSelection,
+} from "../utils/jobGroups";
+
+function FacetRow({
+  label,
+  allLabel,
+  totalCount,
+  groups,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  allLabel: string;
+  totalCount: number;
+  groups: { name: string; count: number }[];
+  selected: string | null;
+  onSelect: (value: string | null) => void;
+}) {
+  if (groups.length === 0) return null;
+
+  return (
+    <div className="facet-group">
+      <span className="facet-label">{label}</span>
+      <div className="studio-filter">
+        <button
+          type="button"
+          className={selected === null ? "studio-pill studio-pill-active" : "studio-pill"}
+          onClick={() => onSelect(null)}
+        >
+          {allLabel} ({totalCount})
+        </button>
+        {groups.map(({ name, count }) => (
+          <button
+            key={name}
+            type="button"
+            className={selected === name ? "studio-pill studio-pill-active" : "studio-pill"}
+            onClick={() => onSelect(name)}
+          >
+            {name} ({count})
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function CompanyDetail() {
   const { companyId } = useParams<{ companyId: string }>();
   const id = Number(companyId);
   const [showAll, setShowAll] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [selection, setSelection] = useState<FacetSelection>(EMPTY_SELECTION);
 
   const { data: company, loading, error } = useApiData(() => getCompany(id));
   const verifiedJobs = activeJobs(company?.jobs ?? []);
   const companyJobs = showAll ? verifiedJobs : englishFocusedJobs(verifiedJobs);
-  const jobGroups = groupJobs(companyJobs, company?.name ?? "");
-  const visibleJobs = filterByGroup(companyJobs, company?.name ?? "", selectedGroup);
+  const companyName = company?.name ?? "";
+  const facetGroups = computeFacetGroups(companyJobs, companyName);
+  const visibleJobs = filterByFacets(companyJobs, companyName, selection);
   const totalJobs = verifiedJobs.length;
   const visibleCount = visibleJobs.length;
   const countLine = showAll
@@ -44,7 +97,7 @@ export default function CompanyDetail() {
     );
   }
 
-  const location = [company.city, company.country].filter(Boolean).join(", ");
+  const location = formatLocation(company.city, company.country);
 
   return (
     <div className="page">
@@ -100,27 +153,30 @@ export default function CompanyDetail() {
         <ShowAllJobsToggle showAll={showAll} onChange={setShowAll} hint="" />
         <p className="section-subtitle job-count-line">{countLine}</p>
 
-        {jobGroups.length > 0 && (
-          <div className="studio-filter">
-            <button
-              type="button"
-              className={selectedGroup === null ? "studio-pill studio-pill-active" : "studio-pill"}
-              onClick={() => setSelectedGroup(null)}
-            >
-              {ALL_GROUPS_LABEL} ({companyJobs.length})
-            </button>
-            {jobGroups.map(({ name, count }) => (
-              <button
-                key={name}
-                type="button"
-                className={selectedGroup === name ? "studio-pill studio-pill-active" : "studio-pill"}
-                onClick={() => setSelectedGroup(name)}
-              >
-                {name} ({count})
-              </button>
-            ))}
-          </div>
-        )}
+        <FacetRow
+          label="Studio / Office"
+          allLabel={ALL_STUDIOS_LABEL}
+          totalCount={companyJobs.length}
+          groups={facetGroups.studio}
+          selected={selection.studio}
+          onSelect={(value) => setSelection((prev) => ({ ...prev, studio: value }))}
+        />
+        <FacetRow
+          label="Department"
+          allLabel={ALL_DEPARTMENTS_LABEL}
+          totalCount={companyJobs.length}
+          groups={facetGroups.department}
+          selected={selection.department}
+          onSelect={(value) => setSelection((prev) => ({ ...prev, department: value }))}
+        />
+        <FacetRow
+          label="Location"
+          allLabel={ALL_LOCATIONS_LABEL}
+          totalCount={companyJobs.length}
+          groups={facetGroups.location}
+          selected={selection.location}
+          onSelect={(value) => setSelection((prev) => ({ ...prev, location: value }))}
+        />
 
         {verifiedJobs.length === 0 && (
           <p className="state-message">No verified jobs yet.</p>
@@ -131,7 +187,7 @@ export default function CompanyDetail() {
           </p>
         )}
         {companyJobs.length > 0 && visibleJobs.length === 0 && (
-          <p className="state-message">No jobs for the selected office/studio. Choose “{ALL_GROUPS_LABEL}” to see others.</p>
+          <p className="state-message">No jobs match the selected filters. Reset a filter to see others.</p>
         )}
 
         <div className="card-grid">

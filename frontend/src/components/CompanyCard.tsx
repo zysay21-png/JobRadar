@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Company } from "../types";
+import { formatLocation } from "../utils/location";
 
 function workModes(company: Company): string[] {
   const modes: string[] = [];
@@ -10,7 +11,7 @@ function workModes(company: Company): string[] {
 }
 
 export default function CompanyCard({ company }: { company: Company }) {
-  const location = [company.city, company.country].filter(Boolean).join(", ");
+  const location = formatLocation(company.city, company.country);
 
   return (
     <Link to={`/companies/${company.id}`} className="card company-card">
