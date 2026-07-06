@@ -23,10 +23,11 @@ const TARGET_COUNTRIES = new Set([
 ]);
 
 // Importers store country in whatever form each source returns (see
-// moon_active.py, gunfire_games.py, arenanet.py, playstation.py) — some use
-// ISO codes, some use full names, one uses the formal ISO long name. This
-// only normalizes strings actually observed in the database; it doesn't
-// invent a mapping for codes that haven't shown up.
+// moon_active.py, gunfire_games.py, arenanet.py, playstation.py,
+// electronic_arts.py) — some use ISO codes, some use full names, some use
+// the formal long-form name. This only normalizes strings actually
+// observed in the database; it doesn't invent a mapping for codes that
+// haven't shown up.
 const COUNTRY_ALIASES: Record<string, string> = {
   usa: "united states",
   us: "united states",
@@ -36,6 +37,7 @@ const COUNTRY_ALIASES: Record<string, string> = {
   pl: "poland",
   ua: "ukraine",
   "taiwan, province of china": "taiwan",
+  "united states of america": "united states",
 };
 
 function normalizeCountry(country: string): string {

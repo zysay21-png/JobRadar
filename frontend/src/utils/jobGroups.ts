@@ -17,6 +17,11 @@ type GroupField = "department" | "city";
 //     (Code, Art, Security) and would be a wrong "studio" grouping.
 //   - Moon Active (moon_active.py): city is a real office city (Tel Aviv,
 //     Warsaw, Kyiv, Barcelona) sourced directly from Comeet's location data.
+//   - Electronic Arts (electronic_arts.py): department is EA's own
+//     "Studio/Department" field, which already distinguishes real studios
+//     (e.g. "EA Studios - Respawn", "EA Studios - Criterion Games", "EA
+//     Studios - DICE Stockholm", "Maxis") from corporate functions (e.g.
+//     "Marketing", "CT - IT", "Finance") via EA's own naming convention.
 // Verified against the current database for every company with imported
 // jobs before adding an entry here — ArenaNet, Gunfire Games, and Krafton
 // were deliberately left out because none of their fields represent
@@ -26,6 +31,7 @@ const COMPANY_GROUP_FIELD: Record<string, GroupField> = {
   "Sony Interactive Entertainment": "department",
   "Rockstar Games": "city",
   "Moon Active": "city",
+  "Electronic Arts": "department",
 };
 
 function groupValueOf(job: Job, field: GroupField): string {
