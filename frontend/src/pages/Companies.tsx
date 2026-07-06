@@ -19,6 +19,7 @@ export default function Companies() {
   return (
     <div className="page">
       <SectionHeader
+        level={1}
         title="Companies"
         subtitle="All tracked companies, including companies with no jobs yet."
         action={

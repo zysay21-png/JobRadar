@@ -18,6 +18,7 @@ export default function Jobs() {
   return (
     <div className="page">
       <SectionHeader
+        level={1}
         title="Active jobs"
         subtitle="All verified job postings."
         action={<RefreshJobsButton onRefreshed={refetch} />}

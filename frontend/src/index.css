@@ -42,6 +42,19 @@ a {
   text-decoration: none;
 }
 
+/* A consistent, on-brand keyboard focus ring for every interactive
+   element, instead of relying on each browser's own default `outline:
+   auto` rendering (visible here, but not guaranteed the same way in
+   every browser, and not part of the app's own design language).
+   :focus-visible keeps this to keyboard/assistive-tech focus only — a
+   mouse click doesn't trigger it. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* Navbar */
 
 .navbar {
@@ -153,8 +166,15 @@ a {
   margin-bottom: 1rem;
 }
 
+/* SectionHeader can render its title as h1 or h2 (see the component) —
+   pinned to the same size/weight either way, so the page-title pages
+   (Companies, Jobs) look identical to how they did as a plain h2; only
+   the semantic level changes, not the appearance. */
+.section-header h1,
 .section-header h2 {
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .section-subtitle {
@@ -272,7 +292,11 @@ a {
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.35rem 0.75rem;
+  /* Slightly taller than the original 0.35rem vertical padding (~28px
+     total) so the chip is a more comfortable touch/click target
+     (~34px) — safe to change since filter chips live above the card
+     grid, not inside a card's own height-reservation math. */
+  padding: 0.45rem 0.75rem;
   border-radius: 999px;
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
@@ -281,6 +305,10 @@ a {
 .filter-chip:hover {
   border-color: var(--accent);
   color: var(--text);
+}
+
+.filter-chip:active {
+  opacity: 0.8;
 }
 
 .filter-chip-active {
@@ -554,7 +582,21 @@ a {
   font-size: 0.85rem;
   font-weight: 600;
   text-align: center;
+  cursor: pointer;
   transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:active {
+  opacity: 0.7;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  /* Stops :hover (border/color highlight) from firing on a disabled
+     button — hover still matches disabled elements in CSS even though
+     clicks and focus don't reach them. */
+  pointer-events: none;
 }
 
 .btn-primary {
