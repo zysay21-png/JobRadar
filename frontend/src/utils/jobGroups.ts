@@ -22,6 +22,11 @@ type GroupField = "department" | "city";
 //     (e.g. "EA Studios - Respawn", "EA Studios - Criterion Games", "EA
 //     Studios - DICE Stockholm", "Maxis") from corporate functions (e.g.
 //     "Marketing", "CT - IT", "Finance") via EA's own naming convention.
+//   - Riot Games (riot_games.py): department is Riot's own "products"
+//     field — the game/product team a role supports (e.g. "VALORANT",
+//     "League of Legends", "Riftbound", "Esports"), which is Riot's real
+//     equivalent of a studio grouping since Riot organizes around product
+//     teams rather than separate studios.
 // Verified against the current database for every company with imported
 // jobs before adding an entry here — ArenaNet, Gunfire Games, and Krafton
 // were deliberately left out because none of their fields represent
@@ -32,6 +37,7 @@ const COMPANY_GROUP_FIELD: Record<string, GroupField> = {
   "Rockstar Games": "city",
   "Moon Active": "city",
   "Electronic Arts": "department",
+  "Riot Games": "department",
 };
 
 function groupValueOf(job: Job, field: GroupField): string {

@@ -1,0 +1,79 @@
+# Importers
+
+Every importer implements `BaseImporter` (`base.py`): `fetch_jobs()` gets raw
+data from a company's official source, `parse_jobs()` turns it into
+`NormalizedJob` records, and the shared `sync_jobs()` does the add/update/
+close-on-disappear logic identically for all of them. `registry.py` is the
+single place that lists which importers actually run; `runner.py` executes
+them all and produces the refresh summary the API and frontend use.
+
+Importers live in one of two folders, depending on what's actually behind
+the company's careers page — not on how much code has been written yet:
+
+```
+importers/
+├── platforms/   — backed by a real, reusable third-party ATS
+├── custom/      — backed by a company's own proprietary system
+├── base.py      — shared interface + sync_jobs()
+├── config.py    — per-company config for config-driven platform importers
+├── registry.py  — the list of importers that actually run
+└── runner.py    — executes them all, used by the API and the CLI
+```
+
+## `platforms/`
+
+Each file here is backed by a real, off-the-shelf ATS product — meaning
+more than one company could plausibly use the exact same code. Two shapes
+currently coexist in this folder:
+
+- **Config-driven** (`greenhouse.py`, `comeet.py`): one importer *class*,
+  any number of companies. Adding a company is a config entry in
+  `config.py` — no new file, no code change. This is the end state every
+  platform importer should eventually reach.
+- **Single-company, pending generalization** (`arenanet.py` — Ashby,
+  `gunfire_games.py` — Paylocity, `electronic_arts.py` — SAP
+  SuccessFactors): today, exactly one confirmed company sits on each of
+  these platforms, so the class is still hardcoded to that one company.
+  They live in `platforms/`, not `custom/`, because the *platform* is
+  reusable even though the *code* hasn't been generalized yet — Greenhouse
+  and Comeet both went through this same single-company phase before being
+  refactored (see the Moon Active → Comeet refactor for the template).
+
+Generalize one of these the moment a **second** confirmed company shows up
+on the same platform — that's the trigger, not a fixed schedule. Until
+then, adding a second company to an ungeneralized platform means writing a
+second single-company file, exactly as `custom/` companies are added.
+
+## `custom/`
+
+Each file here (`rockstar_games.py`, `playstation.py`, `riot_games.py`) is
+backed by a company's own in-house, proprietary careers system — not a
+third-party ATS at all. There is nothing to generalize: one file per
+company, permanently. A new company only goes here if its careers page
+turns out to run on its own bespoke system with no real third-party ATS
+underneath it.
+
+## Adding a new company
+
+1. **It's on Greenhouse or Comeet already:** add one entry to
+   `GREENHOUSE_COMPANIES` / `COMEET_COMPANIES` in `config.py`. Done — no
+   new file, no change to `registry.py`.
+2. **It's on Ashby, Paylocity, or SAP SuccessFactors:** you now have a
+   second confirmed company on that platform — generalize the existing
+   single-company file into a config-driven class first (same shape as the
+   Comeet refactor), add a `<PLATFORM>_COMPANIES` dict to `config.py`, then
+   add the company as a config entry.
+3. **It's on some other platform not listed above:** confirm the platform
+   from the company's own careers page (never guess), write
+   `platforms/<company>.py` implementing `BaseImporter`
+   (`platforms/arenanet.py` is a good single-company template), and add one
+   line to `registry.py`.
+4. **It runs its own proprietary careers system:** write
+   `custom/<company>.py` implementing `BaseImporter`
+   (`custom/rockstar_games.py` is a good template), and add one line to
+   `registry.py`.
+
+In every case, `sync_jobs()` in `base.py` handles matching by
+`official_url`, updating existing jobs, and marking disappeared jobs
+`closed` — importer code only ever needs to implement `fetch_jobs()` and
+`parse_jobs()`.

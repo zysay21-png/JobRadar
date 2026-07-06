@@ -23,3 +23,20 @@ GREENHOUSE_COMPANIES: dict[str, str] = {
     "HoYoverse": "hoyoverse",
     "Krafton": "kraftonamericas",
 }
+
+# Maps a Company.name (must already exist in the companies table) to the
+# company's public Comeet company UID + token — both appear embedded
+# directly in the company's own careers page HTML (they are not secrets;
+# Comeet's own client-side widget uses them the same way).
+#
+# Confirmed via a direct call to
+# https://www.comeet.co/careers-api/2.0/company/<company_uid>/positions?token=<token>
+# on 2026-07-05:
+#   - Moon Active: token/uid embedded in the HTML of
+#     moonactive.com/hot-positions/, real, currently open positions returned.
+COMEET_COMPANIES: dict[str, dict[str, str]] = {
+    "Moon Active": {
+        "company_uid": "A2.00C",
+        "token": "2ACD5C02AC10081008AB01560180C804",
+    },
+}
