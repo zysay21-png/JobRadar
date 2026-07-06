@@ -19,9 +19,29 @@
 #   - "hoyoverse" -> real, currently 0 open jobs.
 #   - "kraftonamericas" -> real, jobs returned have company_name "KRAFTON Americas"
 #     (Krafton's US office/subsidiary — same company family as our "Krafton" row).
+#
+# Confirmed via the same direct API call on 2026-07-06:
+#   - "zyngacareers" -> real, company_name "Zynga", 45 open jobs.
+#   - "playtikaltd" -> real, company_name "Playtika Ltd", 28 open jobs.
+#   - "epicgames" -> real, company_name "Epic Games", 127 open jobs.
+#
+# Deliberately NOT added here yet: Bungie ("bungie" token, confirmed real,
+# 1 open job) and Naughty Dog / Insomniac Games. All three are first-party
+# PlayStation Studios whose jobs may already be imported under "Sony
+# Interactive Entertainment" via the PlayStation importer (confirmed for
+# Bungie: its one open Greenhouse job, "Marathon UI/UX Director", is the
+# exact same posting already stored under Sony Interactive Entertainment
+# with department "Bungie, Inc." — same requisition, different official_url
+# format, so today's exact-URL dedupe in sync_jobs() would not catch it and
+# it would show up twice under two different companies). Add these only
+# after a parent-company/dedupe decision is made for the PlayStation-family
+# studios.
 GREENHOUSE_COMPANIES: dict[str, str] = {
     "HoYoverse": "hoyoverse",
     "Krafton": "kraftonamericas",
+    "Zynga": "zyngacareers",
+    "Playtika": "playtikaltd",
+    "Epic Games": "epicgames",
 }
 
 # Maps a Company.name (must already exist in the companies table) to the
