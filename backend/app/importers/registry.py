@@ -1,3 +1,4 @@
+from app.importers.arenanet import ArenaNetImporter
 from app.importers.base import BaseImporter
 from app.importers.config import GREENHOUSE_COMPANIES
 from app.importers.greenhouse import GreenhouseImporter
@@ -20,6 +21,7 @@ def get_importers() -> list[BaseImporter]:
     importers: list[BaseImporter] = [
         MoonActiveImporter(),
         GunfireGamesImporter(),
+        ArenaNetImporter(),
     ]
 
     importers.extend(
