@@ -13,6 +13,9 @@ class CompanyBase(BaseModel):
     engine: str | None = None
     website: str | None = None
     careers_url: str | None = None
+    region: str | None = None
+    language_focus: str | None = None
+    priority: str = "normal"
     remote: bool = False
     hybrid: bool = False
     onsite: bool = False

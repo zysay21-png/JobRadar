@@ -25,6 +25,18 @@ class Company(Base):
 
     careers_url = Column(String)
 
+    # region: broad hiring region, e.g. "North America", "Europe", "Asia".
+    region = Column(String)
+
+    # language_focus: language(s) an applicant needs to actually apply,
+    # e.g. "English" or "Hebrew/English" — not the company's home language.
+    language_focus = Column(String)
+
+    # priority: "normal" (shown by default) or "low" (local-language-only
+    # careers page, kept in the database but deprioritized/hidden by
+    # default rather than removed).
+    priority = Column(String, default="normal")
+
     remote = Column(Boolean)
 
     hybrid = Column(Boolean)

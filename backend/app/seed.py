@@ -459,11 +459,147 @@ companies = [
         relocation=False,
         visa=False,
     ),
+    # --- Batch 2 expansion ---
+    # Note: Electronic Arts, Riot Games, Ubisoft, Larian Studios, Remedy
+    # Entertainment, and CD Projekt Red were requested again in this batch
+    # but already exist above (added in Batch 1) — not duplicated here.
+    Company(
+        name="Gunfire Games",
+        industry="Gaming",
+        country="USA",
+        city="Austin",
+        platform="PC/Console",
+        website="https://gunfiregames.com",
+        careers_url="https://gunfiregames.com/careers",
+        remote=False,
+        hybrid=False,
+        onsite=False,
+        relocation=False,
+        visa=False,
+    ),
+    Company(
+        name="Capcom",
+        industry="Gaming",
+        country="Japan",
+        city="Osaka",
+        platform="PC/Console",
+        engine="RE Engine",
+        website="https://www.capcom.co.jp",
+        careers_url="https://www.capcom.co.jp/recruit/english/",
+        remote=False,
+        hybrid=False,
+        onsite=False,
+        relocation=False,
+        visa=False,
+    ),
+    Company(
+        name="Sony Interactive Entertainment",
+        industry="Gaming",
+        country="USA",
+        city="San Mateo",
+        platform="PC/Console",
+        website="https://www.playstation.com",
+        careers_url="https://careers.playstation.com/jobs",
+        remote=False,
+        hybrid=False,
+        onsite=False,
+        relocation=False,
+        visa=False,
+    ),
+    Company(
+        name="Epic Games",
+        industry="Gaming",
+        country="USA",
+        city="Cary",
+        platform="PC/Console",
+        engine="Unreal Engine",
+        website="https://www.epicgames.com",
+        careers_url="https://www.epicgames.com/site/en-US/careers/jobs",
+        remote=False,
+        hybrid=False,
+        onsite=False,
+        relocation=False,
+        visa=False,
+    ),
 ]
 
+# Region / language classification.
+#
+# Rule: a company is never removed or hidden just for being headquartered
+# in Japan, Korea, or China. It's only marked "low" priority if its careers
+# page requires the local language with no English or global alternative.
+# As of this seeding, every JP/KR/CN company here (Capcom, FromSoftware,
+# HoYoverse, Krafton) was specifically chosen because it already has a
+# confirmed English or global careers URL (each contains "/en/", "/english/",
+# or "en-us" in its careers_url above) — none currently qualify as "low".
+# Capcom specifically is kept at normal priority because, in addition to its
+# English recruitment site, it has an active North America / USA presence
+# (Capcom USA).
+#
+# name -> (region, language_focus, priority)
+COMPANY_CLASSIFICATION: dict[str, tuple[str, str, str]] = {
+    # North America
+    "Rockstar Games": ("North America", "English", "normal"),
+    "ArenaNet": ("North America", "English", "normal"),
+    "Naughty Dog": ("North America", "English", "normal"),
+    "Insomniac Games": ("North America", "English", "normal"),
+    "Zynga": ("North America", "English", "normal"),
+    "Scopely": ("North America", "English", "normal"),
+    "Bungie": ("North America", "English", "normal"),
+    "Blizzard Entertainment": ("North America", "English", "normal"),
+    "Riot Games": ("North America", "English", "normal"),
+    "Electronic Arts": ("North America", "English", "normal"),
+    "Bethesda Game Studios": ("North America", "English", "normal"),
+    "Niantic": ("North America", "English", "normal"),
+    "Gunfire Games": ("North America", "English", "normal"),
+    "Sony Interactive Entertainment": ("North America", "English", "normal"),
+    "Epic Games": ("North America", "English", "normal"),
+    # Europe
+    "CD Projekt Red": ("Europe", "English", "normal"),
+    "Larian Studios": ("Europe", "English", "normal"),
+    "Ubisoft": ("Europe", "English", "normal"),
+    "King": ("Europe", "English", "normal"),
+    "Remedy Entertainment": ("Europe", "English", "normal"),
+    "Supercell": ("Europe", "English", "normal"),
+    "Team17": ("Europe", "English", "normal"),
+    # Middle East (Israel) — English-language tech/gaming job market;
+    # the defense-oriented ones have careers portals that are partly
+    # Hebrew, reflected honestly in language_focus, but are not in the
+    # JP/KR/CN scope this task asks to gate on, so priority stays normal.
+    "Moon Active": ("Middle East", "English", "normal"),
+    "Playtika": ("Middle East", "English", "normal"),
+    "SuperPlay": ("Middle East", "English", "normal"),
+    "Plarium": ("Middle East", "English", "normal"),
+    "Elbit Systems": ("Middle East", "Hebrew/English", "normal"),
+    "Israel Aerospace Industries": ("Middle East", "Hebrew/English", "normal"),
+    "Rafael Advanced Defense Systems": ("Middle East", "Hebrew/English", "normal"),
+    "Simigon": ("Middle East", "English", "normal"),
+    "Simlat": ("Middle East", "English", "normal"),
+    # Asia (Japan / Korea / China) — each has a confirmed English or
+    # global careers page (see note above), so all stay normal priority.
+    "FromSoftware": ("Asia", "English", "normal"),
+    "HoYoverse": ("Asia", "English", "normal"),
+    "Krafton": ("Asia", "English", "normal"),
+    "Capcom": ("Asia", "English", "normal"),
+}
+
 for company in companies:
+    region, language_focus, priority = COMPANY_CLASSIFICATION.get(
+        company.name, ("Unknown", "English", "normal")
+    )
+    company.region = region
+    company.language_focus = language_focus
+    company.priority = priority
+
     exists = db.query(Company).filter(Company.name == company.name).first()
-    if not exists:
+    if exists:
+        # Backfill classification onto already-seeded rows too, so re-running
+        # this script after adding these fields updates existing companies
+        # instead of only applying to brand-new ones.
+        exists.region = region
+        exists.language_focus = language_focus
+        exists.priority = priority
+    else:
         db.add(company)
 
 db.commit()
