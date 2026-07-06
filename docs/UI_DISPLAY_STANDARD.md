@@ -132,6 +132,42 @@ Don't change UI code as a side effect of reading or updating this
 document. Frontend changes happen in their own explicitly-scoped task,
 same as any other change in this project.
 
+## RULE 11 — UI Consistency First
+
+When introducing a new frontend feature or component:
+
+- Prefer extending an existing pattern instead of creating a new one.
+- Keep layouts, spacing, typography, buttons, badges, chips, filters,
+  cards, and interactions consistent across the application.
+- A user should not have to learn a different interface for each company
+  page.
+- If a new UI pattern is introduced, it should be reusable across the
+  project instead of solving only one company's needs.
+
+## RULE 12 — User First
+
+Every frontend decision should optimize for:
+
+1. Readability
+2. Scannability
+3. Discoverability
+4. Consistency
+5. Responsiveness
+
+When multiple implementations are technically correct, choose the one
+that helps users find, understand, and navigate jobs more quickly.
+
+The interface should provide a consistent experience across:
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Responsive behavior should be built into new UI components from the
+start rather than added later.
+
+Every UI decision should reduce friction for users searching for jobs.
+
 ---
 
 Every future frontend change — new page, new component, new company page
