@@ -1,18 +1,23 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getImporterState, getJobs } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
 import JobCard from "../components/JobCard";
 import RefreshJobsButton from "../components/RefreshJobsButton";
+import ShowAllJobsToggle from "../components/ShowAllJobsToggle";
 import { activeJobs, isNewJob, NO_NEW_JOBS_MESSAGE, NO_VERIFIED_JOBS_MESSAGE } from "../utils/jobs";
+import { englishFocusedJobs } from "../utils/englishFocus";
 
 export default function Home() {
   const { data: jobs, loading, error, refetch: refetchJobs } = useApiData(getJobs);
   const { data: importerState, refetch: refetchState } = useApiData(getImporterState);
+  const [showAll, setShowAll] = useState(false);
 
   const verifiedJobs = activeJobs(jobs ?? []);
+  const visibleJobs = showAll ? verifiedJobs : englishFocusedJobs(verifiedJobs);
   const lastRefreshAt = importerState?.last_refresh_at ?? null;
-  const newJobs = verifiedJobs.filter((job) => isNewJob(job, lastRefreshAt));
-  const recentJobs = verifiedJobs.slice(0, 6);
+  const newJobs = visibleJobs.filter((job) => isNewJob(job, lastRefreshAt));
+  const recentJobs = visibleJobs.slice(0, 6);
 
   function handleRefreshed() {
     refetchJobs();
@@ -34,6 +39,8 @@ export default function Home() {
           <RefreshJobsButton onRefreshed={handleRefreshed} />
         </div>
       </section>
+
+      <ShowAllJobsToggle showAll={showAll} onChange={setShowAll} />
 
       <section>
         <div className="section-header">
