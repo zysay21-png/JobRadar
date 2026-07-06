@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import type { Company } from "../types";
 import { formatLocation } from "../utils/location";
+import { displayPlatform } from "../utils/platform";
 
-function workModes(company: Company): string[] {
-  const modes: string[] = [];
-  if (company.remote) modes.push("Remote");
-  if (company.hybrid) modes.push("Hybrid");
-  if (company.onsite) modes.push("Onsite");
-  return modes;
-}
-
+// The Companies page answers one question — which company do I want to
+// explore — so the card only shows what's needed to decide that: name,
+// platform, and headquarters. Employment specifics (industry, engine,
+// work model, relocation/visa) belong on the company detail and job
+// pages, not here.
+//
 // `showLinks` is opt-in: existing whole-card-clickable usage (Companies
 // grid) stays exactly as it was. Passing website/careers data switches to
 // a layout with a separate title link plus real <a> buttons, since an <a>
@@ -18,12 +17,19 @@ export default function CompanyCard({
   company,
   jobCount,
   showLinks = false,
+  multipleOffices = false,
 }: {
   company: Company;
   jobCount?: number;
   showLinks?: boolean;
+  // True when the company's imported jobs span 2+ distinct real office
+  // locations — showing just the headquarters would then misrepresent a
+  // company that actually develops out of many studios as being limited
+  // to one.
+  multipleOffices?: boolean;
 }) {
-  const location = formatLocation(company.city, company.country);
+  const location = multipleOffices ? "Multiple Studios" : formatLocation(company.city, company.country);
+  const platform = displayPlatform(company.platform);
 
   const header = (
     <div className="card-header">
@@ -38,22 +44,21 @@ export default function CompanyCard({
 
   const tags = (
     <div className="tag-row">
-      {company.industry && <span className="tag">{company.industry}</span>}
-      {company.platform && <span className="tag">{company.platform}</span>}
-      {company.engine && <span className="tag">{company.engine}</span>}
-      {workModes(company).map((mode) => (
-        <span className="tag" key={mode}>
-          {mode}
+      {platform && (
+        <span className="tag" title={company.platform ?? undefined}>
+          {platform}
         </span>
-      ))}
+      )}
     </div>
   );
 
   const meta = (
     <div className="card-meta">
-      {location && <span>{location}</span>}
-      {company.relocation && <span>Relocation support</span>}
-      {company.visa && <span>Visa sponsorship</span>}
+      {location && (
+        <span className="meta-location" title={location}>
+          {location}
+        </span>
+      )}
     </div>
   );
 

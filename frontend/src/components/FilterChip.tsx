@@ -14,8 +14,9 @@ export default function FilterChip({
       type="button"
       className={active ? "filter-chip filter-chip-active" : "filter-chip"}
       onClick={onClick}
+      title={label}
     >
-      {label}
+      <span className="filter-chip-label">{label}</span>
       {typeof count === "number" && <span className="filter-chip-count">({count})</span>}
     </button>
   );

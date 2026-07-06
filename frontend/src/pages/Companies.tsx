@@ -1,11 +1,20 @@
-import { getCompanies } from "../api/client";
+import { useMemo } from "react";
+import { getCompanies, getJobs } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
 import CompanyCard from "../components/CompanyCard";
 import EmptyState from "../components/EmptyState";
 import SectionHeader from "../components/SectionHeader";
+import { activeJobs } from "../utils/jobs";
+import { companiesWithMultipleOffices } from "../utils/officePresence";
 
 export default function Companies() {
   const { data: companies, loading, error } = useApiData(getCompanies);
+  const { data: jobs } = useApiData(getJobs);
+
+  const multiOfficeIds = useMemo(
+    () => companiesWithMultipleOffices(activeJobs(jobs ?? [])),
+    [jobs]
+  );
 
   return (
     <div className="page">
@@ -29,7 +38,11 @@ export default function Companies() {
 
       <div className="card-grid">
         {companies?.map((company) => (
-          <CompanyCard key={company.id} company={company} />
+          <CompanyCard
+            key={company.id}
+            company={company}
+            multipleOffices={multiOfficeIds.has(company.id)}
+          />
         ))}
       </div>
     </div>

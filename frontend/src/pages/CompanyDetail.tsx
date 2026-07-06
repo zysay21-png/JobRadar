@@ -109,15 +109,31 @@ export default function CompanyDetail() {
       <section className="company-detail-header">
         <h1>{company.name}</h1>
         <div className="tag-row">
-          {company.industry && <span className="tag">{company.industry}</span>}
-          {company.platform && <span className="tag">{company.platform}</span>}
-          {company.engine && <span className="tag">{company.engine}</span>}
+          {company.industry && (
+            <span className="tag" title={company.industry}>
+              {company.industry}
+            </span>
+          )}
+          {company.platform && (
+            <span className="tag" title={company.platform}>
+              {company.platform}
+            </span>
+          )}
+          {company.engine && (
+            <span className="tag" title={company.engine}>
+              {company.engine}
+            </span>
+          )}
           {company.remote && <span className="tag">Remote</span>}
           {company.hybrid && <span className="tag">Hybrid</span>}
           {company.onsite && <span className="tag">Onsite</span>}
         </div>
         <div className="card-meta">
-          {location && <span>{location}</span>}
+          {location && (
+            <span className="meta-location" title={location}>
+              {location}
+            </span>
+          )}
           {company.relocation && <span>Relocation support</span>}
           {company.visa && <span>Visa sponsorship</span>}
         </div>
@@ -151,7 +167,7 @@ export default function CompanyDetail() {
         <p className="section-subtitle job-count-line">{countLine}</p>
 
         <FacetRow
-          label="Studio / Office"
+          label="Studios"
           allLabel={ALL_STUDIOS_LABEL}
           totalCount={companyJobs.length}
           groups={facetGroups.studio}

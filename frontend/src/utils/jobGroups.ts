@@ -2,7 +2,7 @@ import type { Job } from "../types";
 import { displayCountry } from "./countries";
 
 export const GENERAL_GROUP = "General";
-export const ALL_STUDIOS_LABEL = "All Studios/Offices";
+export const ALL_STUDIOS_LABEL = "All Studios";
 export const ALL_DEPARTMENTS_LABEL = "All Departments";
 export const ALL_LOCATIONS_LABEL = "All Locations";
 
@@ -140,12 +140,30 @@ const COMPANY_FACETS: Record<string, CompanyFacetConfig> = {
     department: { field: "department" },
   },
   Zynga: {
+    // No location facet here even though these studio names (Gram Games,
+    // NaturalMotion, ...) are brand names, not offices: Zynga's `city`
+    // field is the only location data available, and it's dominated by
+    // compound multi-office strings (e.g. "Austin, TX; Bay Area, CA;
+    // Chicago, IL; Toronto, Canada" as one raw value) — a facet built on
+    // it would show clutter, not clean navigation. Verified against the
+    // real data, not assumed.
     studio: { field: "department", only: ZYNGA_STUDIO_VALUES },
     department: { field: "department", exclude: ZYNGA_STUDIO_VALUES },
   },
   Playtika: {
+    // Studio here is a game-brand code (HOF, WSOP, SGH, SM) — it carries
+    // no geographic meaning at all, unlike Rockstar's city-derived studio
+    // names. Location filters group by country only (see rawFieldValue),
+    // but Playtika's `country` field is empty on every job — its real
+    // location data lives in `city` instead (Herzliya, Bucharest, Warsaw,
+    // Kyiv, plus a few bare country names). city isn't a valid source for
+    // a *filter* here (mixing city- and country-granularity values in one
+    // facet would misrepresent the grouping), so no Location filter shows
+    // for Playtika rather than one built on the wrong field. That data
+    // still reaches the user on each job card via formatJobLocation.
     studio: { field: "department", only: PLAYTIKA_STUDIO_VALUES },
     department: { field: "department", exclude: PLAYTIKA_STUDIO_VALUES },
+    location: { field: "country" },
   },
   "Epic Games": {
     // No studio-level breakdown exists on Epic's Greenhouse board — every
@@ -157,7 +175,13 @@ const COMPANY_FACETS: Record<string, CompanyFacetConfig> = {
 
 function rawFieldValue(job: Job, field: RawField): string | null {
   if (field === "department") return job.department;
-  if (field === "city") return job.city;
+  // Some sources (Playtika) store a bare country name directly in `city`
+  // for a handful of jobs alongside real city names. Running city values
+  // through the same normalizer used for the country field is a safe
+  // no-op for genuine city/studio names (they're never in the country
+  // map) but merges "USA" into "United States" wherever it does apply —
+  // the same fix already applied to job cards in utils/location.ts.
+  if (field === "city") return displayCountry(job.city);
   // Location grouping/filtering uses the normalized display name (see
   // Rule 10 in docs/COMPANY_ONBOARDING_STANDARD.md) so equivalent raw
   // variants (e.g. "USA" vs "United States of America") merge into one

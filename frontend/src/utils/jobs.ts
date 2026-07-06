@@ -21,14 +21,3 @@ export function isNewJob(job: Job, lastRefreshAt: string | null): boolean {
   if (Number.isNaN(firstSeen) || Number.isNaN(refreshedAt)) return false;
   return firstSeen === refreshedAt;
 }
-
-export function formatJobDate(value: string | null): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}

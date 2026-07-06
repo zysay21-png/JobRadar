@@ -57,13 +57,33 @@ row entirely** rather than filling it with fallback text.
 
 ## RULE 4 — Clean Location Display
 
-- Show a location only when it's actually useful — not every card or
-  section needs one.
-- If a studio/office label already gives the reader enough context (e.g.
-  "Rockstar Leeds" already tells you where and which studio), don't also
-  render a separate, redundant, or empty placeholder location line.
+Location filters and JobCard location display have different
+responsibilities — a filter groups jobs at a coarse level; a job card
+shows the specific place that job is actually located.
+
+**Company page Location filter:**
+- Groups by country only, never by city or a mix of granularities.
+- Uses full English country names (per Rule 2).
+- Example values: United States, United Kingdom, Israel, Poland.
+
+**JobCard location display:**
+- Shows the full useful local location, not just the country:
+  - City + state + country, when all three exist: `Austin, TX, United
+    States`
+  - City + country, when there's no state: `London, United Kingdom`
+  - Country only, when that's all that's available: `United Kingdom`
+- Never show city alone when a country is also available — a bare city
+  name can be ambiguous without it.
 - If the official source explicitly says "Multiple Locations", display
   exactly `"Multiple Locations"` — verbatim, not expanded or guessed at.
+- Hide the location line only when there's no useful location at all (per
+  Rule 3) — not merely because it would be shorter to omit it.
+- If a studio/office label already gives the reader clear location
+  context (e.g. "Rockstar Leeds"), a duplicate location line may be
+  omitted — but only when doing so doesn't create ambiguity. Dropping a
+  location is fine when the studio name alone already makes the place
+  obvious; it is not fine when that location line is the only place a
+  user would actually learn it.
 
 ## RULE 5 — Consistent Company Pages
 
@@ -192,6 +212,18 @@ Requirements:
   shared component first.
 - Future UI polish should reuse these components instead of duplicating
   layout code.
+
+## RULE 15 — Flexible Metadata
+
+Metadata should adapt gracefully to different content lengths.
+
+Requirements:
+- Long labels must not break the layout.
+- Cards should remain visually aligned.
+- Long chips may wrap or truncate with ellipsis.
+- Full values should remain accessible (e.g. tooltip/title).
+- Preserve official data.
+- Do not abbreviate or rename official values.
 
 ---
 

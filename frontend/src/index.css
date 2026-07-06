@@ -10,6 +10,13 @@
   --danger: #ff6b6b;
   --radius: 10px;
 
+  /* Spacing scale — 8 / 12 / 16px — used for JobCard's internal rhythm so
+     every section-to-section gap and the card padding come from the same
+     small set of values instead of ad hoc rem amounts. */
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+
   color-scheme: dark;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
@@ -259,6 +266,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  max-width: 280px;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   color: var(--text-muted);
@@ -281,7 +289,15 @@ a {
   color: var(--accent);
 }
 
+.filter-chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .filter-chip-count {
+  flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   opacity: 0.85;
 }
@@ -303,6 +319,26 @@ a {
   border-radius: var(--radius);
   padding: 1.1rem 1.2rem;
   transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+/* JobCard's own spacing scale (see --space-* tokens): a clean, uniform
+   16px padding and a consistent 12px rhythm between header, title, tags,
+   and info sections, instead of the ad hoc rem values on the base .card.
+   `align-self: start` stops CSS Grid from stretching every card in a row
+   to match its tallest neighbor — without it, a job with a short title
+   sitting next to one with a long, wrapped title would be stretched
+   taller than its own content needs, and all of that extra height would
+   land in a single lumpy gap just above the pinned button (since that's
+   the only flexible space in the column). Sizing to natural content
+   instead means every card's internal rhythm is identical and the button
+   sits at a consistent distance from whatever's above it — height still
+   varies between cards, but only because a longer title genuinely needs
+   more room, which is the explicitly accepted case.
+*/
+.job-card {
+  align-self: start;
+  gap: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .company-card {
@@ -344,13 +380,99 @@ a {
   font-size: 0.9rem;
 }
 
+.job-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.job-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Reserve space for both possible rows (location, work arrangement) so a
+   job card missing one of them doesn't end up shorter than a neighbor
+   that has both — some companies supply neither, some just one. Matches
+   .tag-row's 3.3rem reservation: measured real height when both rows are
+   present (location line + the work-arrangement badge's own padding). */
+.card .job-card-info {
+  min-height: 3.3rem;
+  justify-content: flex-start;
+}
+
+/* Deliberately not a .tag/.filter-chip: work arrangement is a distinct
+   kind of information (how you'd work, not what team/studio), so it gets
+   its own subtle color (reusing the existing --success green already
+   used for the Verified badge) instead of the blue used for
+   studio/department. Plain text, no icon, per the design standard. */
+.work-arrangement {
+  display: inline-block;
+  align-self: flex-start;
+  background: rgba(76, 208, 124, 0.12);
+  color: var(--success);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
 }
 
+.job-card .tag-row {
+  gap: var(--space-sm);
+}
+
+/* Inside a card, tag/meta rows reserve a fixed 2-line slot so every card
+   in a grid keeps the same internal rhythm whether it has 2 tags or 6,
+   one meta field or three — the wrap count no longer changes card
+   height. align-content keeps a single line pinned to the top instead of
+   stretching to fill the reserved space. */
+.card .tag-row {
+  min-height: 3.3rem;
+  align-content: flex-start;
+}
+
+.card .card-meta {
+  min-height: 3rem;
+  align-content: flex-start;
+}
+
+/* CompanyCard only ever shows a single platform tag and a single
+   headquarters line now (Companies page info-hierarchy simplification) —
+   it never wraps to a second line, so it doesn't need the 2-line slot
+   JobCard's denser metadata reserves. A 1-line reservation still keeps
+   every company card the same height even if a future company is missing
+   its platform or location. */
+.company-card .tag-row {
+  min-height: 1.4rem;
+}
+
+.company-card .card-meta {
+  min-height: 1.2rem;
+}
+
+.meta-location {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tag {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   background: var(--accent-muted);
   color: var(--accent);
   font-size: 0.75rem;
@@ -583,5 +705,17 @@ a {
   .section-header {
     flex-wrap: wrap;
     row-gap: 0.4rem;
+  }
+
+  .tag {
+    max-width: 150px;
+  }
+
+  .filter-chip {
+    max-width: 200px;
+  }
+
+  .meta-location {
+    max-width: 160px;
   }
 }

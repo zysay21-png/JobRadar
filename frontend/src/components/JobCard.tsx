@@ -1,7 +1,7 @@
 import type { Job } from "../types";
-import { formatJobDate } from "../utils/jobs";
 import { jobDepartmentLabel, jobStudioLabel, studioUsesCityField } from "../utils/jobGroups";
 import { formatLocation } from "../utils/location";
+import { displayWorkArrangement } from "../utils/workArrangement";
 
 export default function JobCard({ job, isNew = false }: { job: Job; isNew?: boolean }) {
   const companyName = job.company?.name ?? "";
@@ -13,14 +13,12 @@ export default function JobCard({ job, isNew = false }: { job: Job; isNew?: bool
   // location line too — the studio badge already conveys the location.
   const locationCity = studioUsesCityField(companyName) ? null : job.city;
   const location = formatLocation(locationCity, job.country);
-  const posted = formatJobDate(job.posted_date);
+  const workArrangement = displayWorkArrangement(job.work_model);
 
   return (
     <article className="card job-card">
-      {job.company && <p className="card-subtitle">{job.company.name}</p>}
-
       <div className="card-header">
-        <h3>{job.title}</h3>
+        {job.company && <p className="card-subtitle">{job.company.name}</p>}
         <div className="badge-row">
           {isNew && <span className="badge badge-new">New</span>}
           <span className={job.is_verified ? "badge badge-verified" : "badge badge-review"}>
@@ -29,24 +27,33 @@ export default function JobCard({ job, isNew = false }: { job: Job; isNew?: bool
         </div>
       </div>
 
+      <h3 className="job-card-title">{job.title}</h3>
+
       {(studio || department) && (
         <div className="tag-row">
-          {studio && <span className="tag tag-studio">{studio}</span>}
-          {department && <span className="tag tag-department">{department}</span>}
+          {studio && (
+            <span className="tag tag-studio" title={studio}>
+              {studio}
+            </span>
+          )}
+          {department && (
+            <span className="tag tag-department" title={department}>
+              {department}
+            </span>
+          )}
         </div>
       )}
 
-      {(job.work_model || job.platform) && (
-        <div className="tag-row">
-          {job.work_model && <span className="tag">{job.work_model}</span>}
-          {job.platform && <span className="tag">{job.platform}</span>}
+      {(location || workArrangement) && (
+        <div className="job-card-info">
+          {location && (
+            <span className="meta-location" title={location}>
+              {location}
+            </span>
+          )}
+          {workArrangement && <span className="work-arrangement">{workArrangement}</span>}
         </div>
       )}
-
-      <div className="card-meta">
-        {location && <span>{location}</span>}
-        {posted && <span>Posted {posted}</span>}
-      </div>
 
       <div className="card-actions">
         {job.official_url && (
