@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getCompany } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
+import EmptyState from "../components/EmptyState";
+import FilterChip from "../components/FilterChip";
 import JobCard from "../components/JobCard";
+import SectionHeader from "../components/SectionHeader";
 import ShowAllJobsToggle from "../components/ShowAllJobsToggle";
 import { activeJobs } from "../utils/jobs";
 import { englishFocusedJobs } from "../utils/englishFocus";
@@ -37,23 +40,21 @@ function FacetRow({
   return (
     <div className="facet-group">
       <span className="facet-label">{label}</span>
-      <div className="studio-filter">
-        <button
-          type="button"
-          className={selected === null ? "studio-pill studio-pill-active" : "studio-pill"}
+      <div className="filter-chip-row">
+        <FilterChip
+          label={allLabel}
+          count={totalCount}
+          active={selected === null}
           onClick={() => onSelect(null)}
-        >
-          {allLabel} ({totalCount})
-        </button>
+        />
         {groups.map(({ name, count }) => (
-          <button
+          <FilterChip
             key={name}
-            type="button"
-            className={selected === name ? "studio-pill studio-pill-active" : "studio-pill"}
+            label={name}
+            count={count}
+            active={selected === name}
             onClick={() => onSelect(name)}
-          >
-            {name} ({count})
-          </button>
+          />
         ))}
       </div>
     </div>
@@ -145,11 +146,7 @@ export default function CompanyDetail() {
       </section>
 
       <section>
-        <div className="section-header">
-          <h2>
-            {totalJobs} Open Job{totalJobs === 1 ? "" : "s"}
-          </h2>
-        </div>
+        <SectionHeader title={`${totalJobs} Open Job${totalJobs === 1 ? "" : "s"}`} />
         <ShowAllJobsToggle showAll={showAll} onChange={setShowAll} hint="" />
         <p className="section-subtitle job-count-line">{countLine}</p>
 
@@ -178,16 +175,12 @@ export default function CompanyDetail() {
           onSelect={(value) => setSelection((prev) => ({ ...prev, location: value }))}
         />
 
-        {verifiedJobs.length === 0 && (
-          <p className="state-message">No verified jobs yet.</p>
-        )}
+        {verifiedJobs.length === 0 && <EmptyState message="No verified jobs yet." />}
         {verifiedJobs.length > 0 && companyJobs.length === 0 && (
-          <p className="state-message">
-            No English-focused jobs for this company. Use “Show all jobs” to see other postings.
-          </p>
+          <EmptyState message='No English-focused jobs for this company. Use "Show all jobs" to see other postings.' />
         )}
         {companyJobs.length > 0 && visibleJobs.length === 0 && (
-          <p className="state-message">No jobs match the selected filters. Reset a filter to see others.</p>
+          <EmptyState message="No jobs match the selected filters. Reset a filter to see others." />
         )}
 
         <div className="card-grid">
