@@ -36,10 +36,12 @@ export default function JobCard({ job, isNew = false }: { job: Job; isNew?: bool
         </div>
       )}
 
-      <div className="tag-row">
-        {job.work_model && <span className="tag">{job.work_model}</span>}
-        {job.platform && <span className="tag">{job.platform}</span>}
-      </div>
+      {(job.work_model || job.platform) && (
+        <div className="tag-row">
+          {job.work_model && <span className="tag">{job.work_model}</span>}
+          {job.platform && <span className="tag">{job.platform}</span>}
+        </div>
+      )}
 
       <div className="card-meta">
         {location && <span>{location}</span>}

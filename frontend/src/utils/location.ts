@@ -38,7 +38,15 @@ export function formatLocation(
   city: string | null | undefined,
   country: string | null | undefined
 ): string | null {
-  const cleanedCity = cleanCityField(city);
+  // Some sources put a bare country value in the *city* field (e.g.
+  // Playtika's Greenhouse board literally stores "USA" as a city for a
+  // few remote roles). Running the cleaned city through the same country
+  // normalizer is a safe no-op for genuine city names — it's a whole-
+  // string lookup, so a multi-segment value like "Bellevue, Washington,
+  // United States" never matches — but it fixes the bare-code case
+  // without a separate special path.
+  const cleanedCityRaw = cleanCityField(city);
+  const cleanedCity = cleanedCityRaw ? displayCountry(cleanedCityRaw) : null;
   const cleanedCountry = displayCountry(country ?? null);
 
   // The source's own "Multiple Locations" placeholder is the complete,

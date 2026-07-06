@@ -168,6 +168,31 @@ start rather than added later.
 
 Every UI decision should reduce friction for users searching for jobs.
 
+## RULE 14 — Shared Components First
+
+Before making broad UI changes, prefer creating or reusing shared
+components.
+
+Core shared components:
+- JobCard
+- CompanyCard
+- FilterChip
+- SectionHeader
+- StatCard
+- EmptyState
+
+Requirements:
+- Do not create one-off UI patterns when a reusable component can solve
+  the problem.
+- Shared components should follow the UI Display Standard.
+- Shared components should support responsive layouts.
+- Shared components should keep spacing, typography, buttons, badges,
+  chips, and empty states consistent.
+- If a page needs a new UI pattern, consider whether it should become a
+  shared component first.
+- Future UI polish should reuse these components instead of duplicating
+  layout code.
+
 ---
 
 Every future frontend change — new page, new component, new company page

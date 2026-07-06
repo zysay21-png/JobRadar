@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { getCompanies } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
 import CompanyCard from "../components/CompanyCard";
@@ -6,18 +5,12 @@ import CompanyCard from "../components/CompanyCard";
 export default function Companies() {
   const { data: companies, loading, error } = useApiData(getCompanies);
 
-  useEffect(() => {
-    if (companies) {
-      console.log("companies", companies);
-    }
-  }, [companies]);
-
   return (
     <div className="page">
       <div className="section-header">
         <h2>Companies</h2>
         {!loading && !error && companies && (
-          <span className="section-link">{companies.length} companies</span>
+          <span className="section-count">{companies.length} companies</span>
         )}
       </div>
       <p className="section-subtitle">

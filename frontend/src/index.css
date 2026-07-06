@@ -120,6 +120,7 @@ a {
 .hero-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -163,6 +164,13 @@ a {
 
 .section-link:hover {
   text-decoration: underline;
+}
+
+.section-count {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .section-header-actions {
@@ -384,6 +392,7 @@ a {
 
 .card-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.2rem;
 }
@@ -457,4 +466,40 @@ a {
 
 .state-error {
   color: var(--danger);
+}
+
+/* Responsive — see docs/UI_DISPLAY_STANDARD.md Rule 12 (User First):
+   built into components from the start, not bolted on later. */
+
+@media (max-width: 900px) {
+  .app-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0.85rem 1.25rem;
+  }
+
+  .app-content {
+    padding: 1.25rem;
+  }
+
+  .hero {
+    padding: 1.75rem 0 1rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+  }
+
+  .section-header {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+  }
 }
