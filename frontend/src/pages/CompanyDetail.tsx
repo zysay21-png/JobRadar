@@ -6,17 +6,21 @@ import JobCard from "../components/JobCard";
 import ShowAllJobsToggle from "../components/ShowAllJobsToggle";
 import { activeJobs } from "../utils/jobs";
 import { englishFocusedJobs } from "../utils/englishFocus";
+import { ALL_GROUPS_LABEL, filterByGroup, groupJobs } from "../utils/jobGroups";
 
 export default function CompanyDetail() {
   const { companyId } = useParams<{ companyId: string }>();
   const id = Number(companyId);
   const [showAll, setShowAll] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
   const { data: company, loading, error } = useApiData(() => getCompany(id));
   const verifiedJobs = activeJobs(company?.jobs ?? []);
   const companyJobs = showAll ? verifiedJobs : englishFocusedJobs(verifiedJobs);
+  const jobGroups = groupJobs(companyJobs, company?.name ?? "");
+  const visibleJobs = filterByGroup(companyJobs, company?.name ?? "", selectedGroup);
   const totalJobs = verifiedJobs.length;
-  const visibleCount = companyJobs.length;
+  const visibleCount = visibleJobs.length;
   const countLine = showAll
     ? `Showing ${visibleCount} of ${totalJobs} jobs`
     : `Showing ${visibleCount} English-focused job${visibleCount === 1 ? "" : "s"}`;
@@ -95,16 +99,43 @@ export default function CompanyDetail() {
         </div>
         <ShowAllJobsToggle showAll={showAll} onChange={setShowAll} hint="" />
         <p className="section-subtitle job-count-line">{countLine}</p>
-        {companyJobs.length === 0 && verifiedJobs.length > 0 && (
+
+        {jobGroups.length > 0 && (
+          <div className="studio-filter">
+            <button
+              type="button"
+              className={selectedGroup === null ? "studio-pill studio-pill-active" : "studio-pill"}
+              onClick={() => setSelectedGroup(null)}
+            >
+              {ALL_GROUPS_LABEL} ({companyJobs.length})
+            </button>
+            {jobGroups.map(({ name, count }) => (
+              <button
+                key={name}
+                type="button"
+                className={selectedGroup === name ? "studio-pill studio-pill-active" : "studio-pill"}
+                onClick={() => setSelectedGroup(name)}
+              >
+                {name} ({count})
+              </button>
+            ))}
+          </div>
+        )}
+
+        {verifiedJobs.length === 0 && (
+          <p className="state-message">No verified jobs yet.</p>
+        )}
+        {verifiedJobs.length > 0 && companyJobs.length === 0 && (
           <p className="state-message">
             No English-focused jobs for this company. Use “Show all jobs” to see other postings.
           </p>
         )}
-        {companyJobs.length === 0 && verifiedJobs.length === 0 && (
-          <p className="state-message">No verified jobs yet.</p>
+        {companyJobs.length > 0 && visibleJobs.length === 0 && (
+          <p className="state-message">No jobs for the selected office/studio. Choose “{ALL_GROUPS_LABEL}” to see others.</p>
         )}
+
         <div className="card-grid">
-          {companyJobs.map((job) => (
+          {visibleJobs.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </div>
