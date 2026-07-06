@@ -4,6 +4,7 @@ from app.importers.config import GREENHOUSE_COMPANIES
 from app.importers.greenhouse import GreenhouseImporter
 from app.importers.gunfire_games import GunfireGamesImporter
 from app.importers.moon_active import MoonActiveImporter
+from app.importers.rockstar_games import RockstarGamesImporter
 
 
 def get_importers() -> list[BaseImporter]:
@@ -22,6 +23,7 @@ def get_importers() -> list[BaseImporter]:
         MoonActiveImporter(),
         GunfireGamesImporter(),
         ArenaNetImporter(),
+        RockstarGamesImporter(),
     ]
 
     importers.extend(
