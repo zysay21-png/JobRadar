@@ -3,9 +3,11 @@ import { SHOWING_ENGLISH_FOCUSED_MESSAGE } from "../utils/englishFocus";
 export default function ShowAllJobsToggle({
   showAll,
   onChange,
+  hint = SHOWING_ENGLISH_FOCUSED_MESSAGE,
 }: {
   showAll: boolean;
   onChange: (showAll: boolean) => void;
+  hint?: string;
 }) {
   return (
     <div className="show-all-jobs">
@@ -17,7 +19,7 @@ export default function ShowAllJobsToggle({
         />
         Show all jobs
       </label>
-      {!showAll && <p className="section-subtitle show-all-jobs-hint">{SHOWING_ENGLISH_FOCUSED_MESSAGE}</p>}
+      {!showAll && hint && <p className="section-subtitle show-all-jobs-hint">{hint}</p>}
     </div>
   );
 }

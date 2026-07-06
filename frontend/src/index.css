@@ -220,6 +220,12 @@ a {
   margin: 0.35rem 0 0;
 }
 
+.job-count-line {
+  margin: 0.35rem 0 1rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* Cards */
 
 .card-grid {

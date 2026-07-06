@@ -1,15 +1,25 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getCompany } from "../api/client";
 import { useApiData } from "../hooks/useApiData";
 import JobCard from "../components/JobCard";
+import ShowAllJobsToggle from "../components/ShowAllJobsToggle";
 import { activeJobs } from "../utils/jobs";
+import { englishFocusedJobs } from "../utils/englishFocus";
 
 export default function CompanyDetail() {
   const { companyId } = useParams<{ companyId: string }>();
   const id = Number(companyId);
+  const [showAll, setShowAll] = useState(false);
 
   const { data: company, loading, error } = useApiData(() => getCompany(id));
-  const companyJobs = activeJobs(company?.jobs ?? []);
+  const verifiedJobs = activeJobs(company?.jobs ?? []);
+  const companyJobs = showAll ? verifiedJobs : englishFocusedJobs(verifiedJobs);
+  const totalJobs = verifiedJobs.length;
+  const visibleCount = companyJobs.length;
+  const countLine = showAll
+    ? `Showing ${visibleCount} of ${totalJobs} jobs`
+    : `Showing ${visibleCount} English-focused job${visibleCount === 1 ? "" : "s"}`;
 
   if (loading) {
     return (
@@ -79,9 +89,18 @@ export default function CompanyDetail() {
 
       <section>
         <div className="section-header">
-          <h2>Open Jobs</h2>
+          <h2>
+            {totalJobs} Open Job{totalJobs === 1 ? "" : "s"}
+          </h2>
         </div>
-        {companyJobs.length === 0 && (
+        <ShowAllJobsToggle showAll={showAll} onChange={setShowAll} hint="" />
+        <p className="section-subtitle job-count-line">{countLine}</p>
+        {companyJobs.length === 0 && verifiedJobs.length > 0 && (
+          <p className="state-message">
+            No English-focused jobs for this company. Use “Show all jobs” to see other postings.
+          </p>
+        )}
+        {companyJobs.length === 0 && verifiedJobs.length === 0 && (
           <p className="state-message">No verified jobs yet.</p>
         )}
         <div className="card-grid">

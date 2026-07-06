@@ -33,7 +33,10 @@ export default function Home() {
           openings as soon as they land.
         </p>
         <div className="hero-actions">
-          <Link to="/jobs" className="button-primary">
+          <Link to="/companies" className="button-primary">
+            Browse companies
+          </Link>
+          <Link to="/jobs" className="btn btn-secondary btn-lg">
             Browse all jobs
           </Link>
           <RefreshJobsButton onRefreshed={handleRefreshed} />
