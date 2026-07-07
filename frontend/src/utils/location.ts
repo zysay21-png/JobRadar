@@ -13,6 +13,21 @@ const MULTIPLE_LOCATIONS = /^multiple locations$/i;
 // ...) always has a space after its comma.
 const COMPOUND_NO_SPACE_COMMA = /,\S/;
 
+// Some sources put a work-arrangement descriptor in the city field
+// instead of a real place (confirmed case: ArenaNet's city is literally
+// "Remote" / "Remote or Hybrid", not an office name). Shown as a location,
+// this reads as a fabricated place and can literally duplicate the
+// Work Arrangement badge on the same card (e.g. location "Remote, United
+// States" next to a "Remote" badge, for the same job). Exported so both
+// this module's own formatting and office-presence detection
+// (utils/officePresence.ts) treat the same set of values as non-offices.
+const NON_OFFICE_CITY_VALUES = new Set(["remote", "remote or hybrid", "hybrid", "onsite", "on-site"]);
+
+export function isRealOfficeCity(city: string | null | undefined): boolean {
+  const trimmed = city?.trim().toLowerCase();
+  return !trimmed || !NON_OFFICE_CITY_VALUES.has(trimmed);
+}
+
 function cleanCityField(city: string | null | undefined): string | null {
   const trimmed = city?.trim();
   if (!trimmed) return null;

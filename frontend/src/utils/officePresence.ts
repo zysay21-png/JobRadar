@@ -1,20 +1,5 @@
 import type { Job } from "../types";
-import { formatLocation } from "./location";
-
-// Some sources put a work-arrangement descriptor in the city field instead
-// of a real place (confirmed case: ArenaNet's city is literally "Remote" /
-// "Remote or Hybrid", not an office name). Checked against the raw city
-// value directly — before it's combined with a country into a display
-// string — so this catches the descriptor regardless of whether a country
-// happens to be attached to that particular job. These must not count as
-// distinct offices, or a single-office company posting only remote roles
-// would be wrongly reported as multi-office.
-const NON_OFFICE_CITY_VALUES = new Set(["remote", "remote or hybrid", "hybrid", "onsite", "on-site"]);
-
-function isRealOfficeCity(city: string | null | undefined): boolean {
-  const trimmed = city?.trim().toLowerCase();
-  return !trimmed || !NON_OFFICE_CITY_VALUES.has(trimmed);
-}
+import { formatLocation, isRealOfficeCity } from "./location";
 
 // Companies whose jobs span 2+ distinct real office locations — used on
 // the Companies page to show "Multiple Studios" instead of a single

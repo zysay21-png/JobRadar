@@ -1,6 +1,6 @@
 import type { Job } from "../types";
 import { jobDepartmentLabel, jobStudioLabel, studioUsesCityField } from "../utils/jobGroups";
-import { formatLocation } from "../utils/location";
+import { formatLocation, isRealOfficeCity } from "../utils/location";
 import { displayWorkArrangement } from "../utils/workArrangement";
 
 export default function JobCard({ job, isNew = false }: { job: Job; isNew?: boolean }) {
@@ -11,7 +11,14 @@ export default function JobCard({ job, isNew = false }: { job: Job; isNew?: bool
   // When this company's studio badge already comes from the city field
   // (e.g. Rockstar's "Rockstar North"), don't repeat it in the plain
   // location line too — the studio badge already conveys the location.
-  const locationCity = studioUsesCityField(companyName) ? null : job.city;
+  // Separately, some sources (ArenaNet) store a work-arrangement word
+  // ("Remote", "Remote or Hybrid") in the city field rather than a real
+  // office — showing that as a location would fabricate a fake place and
+  // can literally duplicate the Work Arrangement badge below it, so it's
+  // treated the same as a missing city (falls back to country, or hides
+  // the row entirely if there's no country either).
+  const locationCity =
+    studioUsesCityField(companyName) || !isRealOfficeCity(job.city) ? null : job.city;
   const location = formatLocation(locationCity, job.country);
   const workArrangement = displayWorkArrangement(job.work_model);
 
