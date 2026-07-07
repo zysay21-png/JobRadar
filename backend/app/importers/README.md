@@ -24,6 +24,32 @@ close-on-disappear logic identically for all of them. `registry.py` is the
 single place that lists which importers actually run; `runner.py` executes
 them all and produces the refresh summary the API and frontend use.
 
+## `official_url` must always be canonicalized
+
+Every `NormalizedJob.official_url` a `parse_jobs()` produces must be passed
+through `normalize_official_url()` (`url_normalize.py`) before it's returned
+— never build or match on a raw URL. Some sources (confirmed: Comeet's
+`url_active_page`, used by Moon Active and SuperPlay) return a different
+cache-busting or tracking query parameter (`t=`, `src=`, `fbclid=`, ...) on
+every fetch of the *same* posting; without normalization, `sync_jobs()`'s
+exact-string dedupe treats each re-scrape as a brand-new job. This is a
+confirmed real bug that created 15 duplicate rows before this normalizer
+existed.
+
+`normalize_official_url()` only strips a fixed set of known
+tracking/cache-busting parameters (UTM params, `fbclid`, `gclid`, session
+ids, timestamps, ...). It never touches a parameter that identifies the job
+itself (`gh_jid`, `uid`, `jobId`, ...) — when adding a new importer, if its
+source uses a job-identifying query parameter not already in
+`TRACKING_QUERY_PARAMS`' complement (i.e. it isn't in that blocklist), it's
+preserved automatically; just don't add a real job identifier to the
+blocklist.
+
+`sync_jobs()` also normalizes `official_url` again itself as a backstop —
+so even if a `parse_jobs()` implementation forgets, matching/storage still
+uses the canonical form — but every importer should normalize at the source
+too, so the URL is already canonical before `sync_jobs()` ever sees it.
+
 Importers live in one of two folders, depending on what's actually behind
 the company's careers page — not on how much code has been written yet:
 
@@ -90,7 +116,8 @@ underneath it.
    (`custom/rockstar_games.py` is a good template), and add one line to
    `registry.py`.
 
-In every case, `sync_jobs()` in `base.py` handles matching by
+In every case, `sync_jobs()` in `base.py` handles matching by canonical
 `official_url`, updating existing jobs, and marking disappeared jobs
 `closed` — importer code only ever needs to implement `fetch_jobs()` and
-`parse_jobs()`.
+`parse_jobs()`, passing every `official_url` through
+`normalize_official_url()` before returning it (see above).

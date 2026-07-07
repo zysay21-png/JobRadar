@@ -4,6 +4,7 @@ import urllib.request
 from datetime import datetime
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # ArenaNet's own careers page (arena.net/en/careers) renders its job list
 # client-side using Ashby's public job board API
@@ -69,7 +70,9 @@ class ArenaNetImporter(BaseImporter):
             jobs.append(
                 NormalizedJob(
                     title=title.strip(),
-                    official_url=ARENANET_JOB_URL.format(job_id=job_id),
+                    official_url=normalize_official_url(
+                        ARENANET_JOB_URL.format(job_id=job_id)
+                    ),
                     department=raw_job.get("department"),
                     city=raw_job.get("location"),
                     country=address.get("addressCountry"),

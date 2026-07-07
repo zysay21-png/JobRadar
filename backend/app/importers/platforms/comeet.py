@@ -3,6 +3,7 @@ import urllib.error
 import urllib.request
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 COMEET_POSITIONS_URL = (
     "https://www.comeet.co/careers-api/2.0/company/{company_uid}/positions"
@@ -52,8 +53,13 @@ class ComeetImporter(BaseImporter):
         for position in raw:
             title = position.get("name")
             # The official, company-hosted job page, not the Comeet-hosted
-            # mirror — this is the real "official URL".
-            official_url = position.get("url_active_page")
+            # mirror — this is the real "official URL". Comeet returns a
+            # fresh cache-busting/tracking query param (t=, src=, fbclid=)
+            # on every fetch of the same posting, so this must go through
+            # the shared normalizer before it's ever matched or stored —
+            # confirmed root cause of a real duplicate-jobs bug for Moon
+            # Active and SuperPlay.
+            official_url = normalize_official_url(position.get("url_active_page"))
             if not title or not official_url:
                 continue
 

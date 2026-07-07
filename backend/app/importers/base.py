@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime
 from typing import Any, TypedDict
 
+from app.importers.url_normalize import normalize_official_url
 from app.models import Company, Job
 
 
@@ -62,13 +63,21 @@ class BaseImporter(ABC):
     ) -> tuple[int, int, int]:
         """Upsert `jobs` for `company`. Returns (added, updated, closed).
 
-        - A job not already in the database (matched by official_url) is
-          added with first_seen = last_checked = now.
+        - A job not already in the database (matched by its canonical
+          official_url — see app.importers.url_normalize) is added with
+          first_seen = last_checked = now.
         - A job that already exists is updated in place; first_seen is left
           untouched.
         - Any previously-open official job for this company that isn't in
           `jobs` has disappeared from the source and is marked closed
           (never deleted).
+
+        Every importer is expected to already normalize official_url when
+        building its NormalizedJob records (see url_normalize.py). It's
+        normalized again here regardless — this is the actual match/store
+        step, and it must never trust an importer to have done it, since a
+        raw, un-normalized URL slipping through here is exactly how
+        tracking-parameter duplicates get created.
         """
         added = 0
         updated = 0
@@ -76,7 +85,7 @@ class BaseImporter(ABC):
 
         for job in jobs:
             title = job.get("title")
-            official_url = job.get("official_url")
+            official_url = normalize_official_url(job.get("official_url"))
             if not title or not official_url:
                 continue
 

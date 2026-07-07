@@ -4,6 +4,7 @@ import urllib.parse
 import urllib.request
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # Rockstar's own careers page (rockstargames.com/careers/openings) renders
 # its full openings list client-side by calling this GraphQL endpoint with a
@@ -79,7 +80,9 @@ class RockstarGamesImporter(BaseImporter):
             jobs.append(
                 NormalizedJob(
                     title=title,
-                    official_url=ROCKSTAR_JOB_URL.format(job_id=job_id),
+                    official_url=normalize_official_url(
+                        ROCKSTAR_JOB_URL.format(job_id=job_id)
+                    ),
                     department=raw_job.get("department"),
                     city=studio,
                     country=None,

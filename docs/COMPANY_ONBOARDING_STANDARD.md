@@ -132,6 +132,18 @@ instead. Examples already established in this codebase: Riot Games and
 Rockstar Games have no posted-date field anywhere, so `posted_date` is
 left unset for both, rather than guessed from anything else.
 
+Every `official_url` must be passed through
+`app.importers.url_normalize.normalize_official_url()` before it's
+returned from `parse_jobs()` — never build or match on the raw URL. Some
+sources return a different tracking or cache-busting query parameter (a
+timestamp, `utm_*`, `fbclid`, ...) on every fetch of the *same* posting
+(confirmed real case: Comeet's `url_active_page`, used by Moon Active and
+SuperPlay); without normalizing first, the exact-URL dedupe below treats
+each re-scrape as a brand-new job. Never add a parameter that identifies
+the job itself (`gh_jid`, `uid`, `jobId`, ...) to the normalizer's
+strip-list — confirm from the source which query parameter is the real
+job identifier before assuming a parameter is safe to drop.
+
 ## RULE 6 — Verification (backend)
 
 Before considering a company done, verify all of the following, live,
@@ -141,6 +153,11 @@ against the real database — not just in isolation:
   add 0 jobs.
 - **`official_url` uniqueness** — query the database for any duplicate
   `official_url` across the whole table, not just this company.
+- **Tracking-parameter idempotency** — if the source ever returns a
+  slightly different URL for the same posting (a timestamp, `utm_*`,
+  `fbclid`, a session id, ...), confirm `normalize_official_url()` collapses
+  both to the same canonical string, and that a real job-identifying query
+  parameter (if the source uses one) is preserved, not stripped.
 - **Idempotency** — same as duplicate prevention: two consecutive runs
   must produce identical `added: 0` results with no unexpected updates.
 - **`first_seen`** — set once, on first import, and never touched again

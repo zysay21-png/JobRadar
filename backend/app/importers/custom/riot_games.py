@@ -5,6 +5,7 @@ import urllib.error
 import urllib.request
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # Riot's own careers page (riotgames.com/en/work-with-us/jobs) embeds its
 # full, current job list directly in the page's initial HTML — no separate
@@ -86,7 +87,9 @@ class RiotGamesImporter(BaseImporter):
             jobs.append(
                 NormalizedJob(
                     title=title,
-                    official_url=RIOT_JOB_URL.format(job_id=job_id),
+                    official_url=normalize_official_url(
+                        RIOT_JOB_URL.format(job_id=job_id)
+                    ),
                     # Riot organizes roles around product/game teams (e.g.
                     # "VALORANT", "League of Legends", "Riftbound", "Esports",
                     # "Riot Operations & Support") rather than separate

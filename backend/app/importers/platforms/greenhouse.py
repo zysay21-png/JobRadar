@@ -4,6 +4,7 @@ import urllib.request
 from datetime import datetime
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 GREENHOUSE_JOBS_URL = "https://boards-api.greenhouse.io/v1/boards/{board_token}/jobs?content=true"
 
@@ -59,7 +60,7 @@ class GreenhouseImporter(BaseImporter):
 
         for raw_job in raw:
             title = raw_job.get("title")
-            official_url = raw_job.get("absolute_url")
+            official_url = normalize_official_url(raw_job.get("absolute_url"))
             if not title or not official_url:
                 continue
 

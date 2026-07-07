@@ -4,6 +4,7 @@ import urllib.request
 from datetime import datetime
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # Gunfire Games' own careers page (gunfiregames.com/careers) links directly
 # to their Paylocity Recruiting job board. That page embeds its full job
@@ -79,7 +80,9 @@ class GunfireGamesImporter(BaseImporter):
             jobs.append(
                 NormalizedJob(
                     title=title,
-                    official_url=GUNFIRE_JOB_DETAIL_URL.format(job_id=job_id),
+                    official_url=normalize_official_url(
+                        GUNFIRE_JOB_DETAIL_URL.format(job_id=job_id)
+                    ),
                     department=raw_job.get("HiringDepartment"),
                     city=raw_job.get("LocationName"),
                     country=location.get("Country"),

@@ -4,6 +4,7 @@ import urllib.error
 import urllib.request
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # PlayStation's own careers site (careers.playstation.com/jobs) is a Paradox
 # ("Olivia") career site. The page itself calls this same-origin, official
@@ -102,7 +103,9 @@ class PlayStationImporter(BaseImporter):
             jobs.append(
                 NormalizedJob(
                     title=title.strip(),
-                    official_url=JOB_URL_TEMPLATE.format(original_url=original_url),
+                    official_url=normalize_official_url(
+                        JOB_URL_TEMPLATE.format(original_url=original_url)
+                    ),
                     # The studio/legal entity that owns the role (e.g.
                     # "Naughty Dog", "Insomniac Games", "Sucker Punch
                     # Productions, LLC") — preserved exactly as PlayStation's

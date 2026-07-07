@@ -4,6 +4,7 @@ import urllib.error
 import urllib.request
 
 from app.importers.base import BaseImporter, ImporterFetchError, NormalizedJob
+from app.importers.url_normalize import normalize_official_url
 
 # EA's own careers site (ea.com/careers -> jobs.ea.com) is a SAP
 # SuccessFactors Recruiting career site. Its search results page is
@@ -89,7 +90,7 @@ class ElectronicArtsImporter(BaseImporter):
 
         for raw_job in raw:
             title = raw_job.get("title")
-            official_url = raw_job.get("url")
+            official_url = normalize_official_url(raw_job.get("url"))
             if not title or not official_url:
                 continue
 
