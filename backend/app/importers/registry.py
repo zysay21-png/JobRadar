@@ -1,5 +1,9 @@
 from app.importers.base import BaseImporter
-from app.importers.config import COMEET_COMPANIES, GREENHOUSE_COMPANIES
+from app.importers.config import (
+    COMEET_COMPANIES,
+    GREENHOUSE_COMPANIES,
+    GREENHOUSE_PREFER_OFFICES_CITY,
+)
 from app.importers.custom.playstation import PlayStationImporter
 from app.importers.custom.riot_games import RiotGamesImporter
 from app.importers.custom.rockstar_games import RockstarGamesImporter
@@ -56,7 +60,11 @@ def get_importers() -> list[BaseImporter]:
     ]
 
     importers.extend(
-        GreenhouseImporter(company_name, board_token)
+        GreenhouseImporter(
+            company_name,
+            board_token,
+            prefer_offices_for_city=company_name in GREENHOUSE_PREFER_OFFICES_CITY,
+        )
         for company_name, board_token in GREENHOUSE_COMPANIES.items()
     )
 

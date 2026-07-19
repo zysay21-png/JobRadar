@@ -48,9 +48,27 @@ class GreenhouseImporter(BaseImporter):
     not a new file (see registry.py).
     """
 
-    def __init__(self, company_name: str, board_token: str):
+    def __init__(
+        self, company_name: str, board_token: str, prefer_offices_for_city: bool = False
+    ):
         self.company_name = company_name
         self.board_token = board_token
+        # Greenhouse's free-text `location.name` is normally the more
+        # reliable field, but on some boards it's inconsistent (a bare
+        # country name for some jobs, a real city for others, a
+        # semicolon-joined multi-city string for others) while the
+        # structured `offices[]` array gives clean, real per-job office
+        # names instead. This is NOT true for every Greenhouse board —
+        # confirmed by direct comparison: Epic Games' `offices[]` is a
+        # static default (always its Cary, NC HQ) that disagrees with the
+        # real per-job location on 82 of ~127 jobs, so using it there
+        # would be a regression. Playtika's `offices[]`, by contrast, was
+        # confirmed to vary correctly per job (Herzliya, Las Vegas,
+        # Warsaw, Bucharest, Kyiv, and genuine multi-office lists) and is
+        # strictly better than its own noisy `location.name`. This flag
+        # must only be set after that same kind of direct verification for
+        # a given company — never assumed.
+        self.prefer_offices_for_city = prefer_offices_for_city
 
     def fetch_jobs(self) -> list[dict]:
         return fetch_jobs(self.board_token)
@@ -69,6 +87,15 @@ class GreenhouseImporter(BaseImporter):
 
             location = raw_job.get("location") or {}
             city = location.get("name")
+
+            if self.prefer_offices_for_city:
+                offices = [
+                    office["name"]
+                    for office in (raw_job.get("offices") or [])
+                    if office.get("name")
+                ]
+                if offices:
+                    city = ", ".join(offices)
 
             jobs.append(
                 NormalizedJob(

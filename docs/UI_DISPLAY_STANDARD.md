@@ -8,7 +8,11 @@ project policy alongside
 This document is about **presentation only**. It never changes what data
 gets imported or how — see the onboarding standard for that. The backend
 remains the single source of truth; the frontend's only job is to present
-that truth consistently and legibly.
+that truth consistently and legibly. For the canonical shape of each data
+field this document formats (countries, states, cities, URLs, dates,
+company/studio/department names), see
+[`docs/DATA_STANDARDS.md`](DATA_STANDARDS.md) — every display rule below
+must agree with it.
 
 ---
 

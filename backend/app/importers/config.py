@@ -44,6 +44,25 @@ GREENHOUSE_COMPANIES: dict[str, str] = {
     "Epic Games": "epicgames",
 }
 
+# Companies whose Greenhouse board's structured `offices[]` array is a more
+# reliable per-job city source than the free-text `location.name` field —
+# see GreenhouseImporter.prefer_offices_for_city for the full rationale.
+#
+# Confirmed via a direct call to
+# https://boards-api.greenhouse.io/v1/boards/playtikaltd/jobs?content=true
+# on 2026-07-07: `location.name` mixes bare country names ("Israel", "USA",
+# "Poland") with real cities ("Herzliya", "Warsaw") and semicolon-joined
+# multi-city strings ("Kyiv; Vinnytsia") — inconsistent. `offices[]`, by
+# contrast, gave a real, varying, per-job city (or list of cities) for
+# every one of Playtika's 28 open jobs (e.g. "Israel" -> ["Herzliya"],
+# "USA" -> ["Las Vegas"], "Poland" -> ["Warsaw"]).
+#
+# Do NOT add a company here without the same direct comparison — Epic
+# Games' `offices[]` was checked the same way and found to be a static
+# default (always "Cary", its NC HQ) that disagrees with the real per-job
+# location on 82 of ~127 jobs, so it's deliberately NOT in this set.
+GREENHOUSE_PREFER_OFFICES_CITY: set[str] = {"Playtika"}
+
 # Maps a Company.name (must already exist in the companies table) to the
 # company's public Comeet company UID + token — both appear embedded
 # directly in the company's own careers page HTML (they are not secrets;

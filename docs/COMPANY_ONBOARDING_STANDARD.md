@@ -13,7 +13,11 @@ This document covers *what data gets imported and how*. For how that
 data is *presented* once it's in the database — country name formatting,
 location cleanup, job card structure, company page layout — see
 [`docs/UI_DISPLAY_STANDARD.md`](UI_DISPLAY_STANDARD.md), the frontend's
-equivalent permanent standard.
+equivalent permanent standard. For the canonical shape of each data field
+itself (countries, states, cities, URLs, dates, company/studio/department
+names) across the whole project, see
+[`docs/DATA_STANDARDS.md`](DATA_STANDARDS.md) — every rule in this
+document must agree with it.
 
 ---
 

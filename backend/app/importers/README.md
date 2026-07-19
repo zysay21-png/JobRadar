@@ -16,6 +16,11 @@
 > the frontend's equivalent permanent standard. Importers never format for
 > display; they only preserve official data (Rule 1 there mirrors Rule 10
 > here).
+>
+> For the canonical shape of every data field (countries, states, cities,
+> URLs, dates, company/studio/department names), see
+> [`docs/DATA_STANDARDS.md`](../../../docs/DATA_STANDARDS.md) — the single
+> project-wide reference both of the documents above must agree with.
 
 Every importer implements `BaseImporter` (`base.py`): `fetch_jobs()` gets raw
 data from a company's official source, `parse_jobs()` turns it into
